@@ -4,10 +4,11 @@ import {
   IconHexagon3d,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
-  IconWallet,
   IconX,
 } from "@tabler/icons-react";
 import { ThemeToggle } from "./theme-toggle";
+import { NetworkBadge } from "@/components/wallet/network-badge";
+import { WalletButton } from "@/components/wallet/wallet-button";
 
 type SidebarProps = {
   pathname: string;
@@ -126,25 +127,8 @@ export function Sidebar({
           {!collapsed && <span>Demo mode</span>}
         </label>
 
-        <div
-          title="Network"
-          className={`flex items-center gap-2 text-sm text-muted ${collapsed ? "justify-center" : "px-2"}`}
-        >
-          <span className="size-2 shrink-0 rounded-full bg-estate" />
-          {!collapsed && <span>Polygon</span>}
-        </div>
-
-        <button
-          type="button"
-          disabled
-          title="Wallet connection is added in the next step"
-          className={`flex items-center justify-center gap-2 rounded-lg bg-accent py-2.5 font-semibold text-accent-ink disabled:cursor-not-allowed disabled:opacity-60 ${
-            collapsed ? "px-0" : "px-3"
-          }`}
-        >
-          <IconWallet size={18} stroke={1.75} />
-          {!collapsed && <span>Connect wallet</span>}
-        </button>
+        <NetworkBadge collapsed={collapsed} />
+        <WalletButton collapsed={collapsed} />
       </div>
     </aside>
   );
