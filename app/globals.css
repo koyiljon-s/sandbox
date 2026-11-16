@@ -30,6 +30,8 @@
   /* Amber, so ESTATES never get confused with the blue "selected" state. */
   --estate: #c2410c;
   --estate-soft: rgb(234 88 12 / 0.18);
+  --land-polygon: #7c3aed;
+  --land-ethereum: #0e7490;
   --danger: #dc2626;
   --success: #15803d;
 }
@@ -56,6 +58,8 @@
 
   --estate: #f59e0b;
   --estate-soft: rgb(245 158 11 / 0.2);
+  --land-polygon: #a78bfa;
+  --land-ethereum: #22d3ee;
   --danger: #ff6b6b;
   --success: #4ade80;
 }
@@ -79,6 +83,8 @@
 
   --color-estate: var(--estate);
   --color-estate-soft: var(--estate-soft);
+  --color-land-polygon: var(--land-polygon);
+  --color-land-ethereum: var(--land-ethereum);
   --color-danger: var(--danger);
   --color-success: var(--success);
 
