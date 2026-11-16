@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "snapshot": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/snapshot-land.mjs"
+    "snapshot": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/snapshot.mjs"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.52.0",

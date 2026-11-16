@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Saves a snapshot of LAND data for demo mode / offline fallback.
+ * Saves a snapshot of LAND and SAND data for demo mode / offline fallback.
  *
  *   npm run snapshot
  *
- * Writes public/demo/land-snapshot.json:
+ * Writes public/demo/sand-snapshot.json: SAND total supply on each chain and
+ * the newest Transfer events. And public/demo/land-snapshot.json:
  *   - statuses: one character per parcel for the whole 408 × 408 map, indexed by
  *     token ID: p = Polygon, e = Ethereum, c = held by contract, u = not minted
  *   - parcels: full details (owners, metadata, local preview image) for the presets
@@ -16,7 +17,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createPublicClient, http } from "viem";
 import { mainnet, polygon } from "viem/chains";
-import { CONTRACTS, ETH_LAND_HOLDER_CONTRACT, LAND_GRID_SIZE, landAbi } from "../lib/contracts.ts";
+import { CONTRACTS, ETH_LAND_HOLDER_CONTRACT, LAND_GRID_SIZE, landAbi, sandAbi } from "../lib/contracts.ts";
 import presets from "../lib/land-presets.json" with { type: "json" };
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -173,8 +174,56 @@ async function snapshotParcel({ x, y }) {
   return entry;
 }
 
+/* ---------- SAND ---------- */
+
+// Same lookback as app/economy/use-sand.ts.
+const SAND_LOOKBACK = { ethereum: 300n, polygon: 10_000n };
+const chainIds = { ethereum: mainnet.id, polygon: polygon.id };
+
+async function sandTransfers(chain) {
+  const client = clients[chain];
+  const latest = await client.getBlockNumber();
+  const logs = await client.getLogs({
+    address: CONTRACTS[chainIds[chain]].sand,
+    event: sandAbi.find((i) => i.type === "event" && i.name === "Transfer"),
+    fromBlock: latest - SAND_LOOKBACK[chain],
+    toBlock: latest,
+  });
+  const newest = logs.slice(-8).reverse();
+  const blocks = new Map();
+  for (const n of new Set(newest.map((l) => l.blockNumber))) blocks.set(n, await client.getBlock({ blockNumber: n }));
+  return newest.map((l) => ({
+    chainId: chainIds[chain],
+    hash: l.transactionHash,
+    logIndex: l.logIndex,
+    blockNumber: l.blockNumber.toString(),
+    timestamp: new Date(Number(blocks.get(l.blockNumber).timestamp) * 1000).toISOString(),
+    from: l.args.from,
+    to: l.args.to,
+    value: l.args.value.toString(),
+  }));
+}
+
+async function snapshotSand() {
+  console.log("Snapshotting SAND supply and recent transfers…");
+  const supply = {};
+  const transfers = [];
+  for (const chain of ["ethereum", "polygon"]) {
+    supply[chainIds[chain]] = (
+      await clients[chain].readContract({ address: CONTRACTS[chainIds[chain]].sand, abi: sandAbi, functionName: "totalSupply" })
+    ).toString();
+    transfers.push(...(await sandTransfers(chain)));
+  }
+  transfers.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+  const snapshot = { createdAt: new Date().toISOString(), totalSupply: supply, transfers };
+  await writeFile(path.join(OUT_DIR, "sand-snapshot.json"), JSON.stringify(snapshot));
+  console.log(`Saved public/demo/sand-snapshot.json (${transfers.length} transfers)`);
+}
+
 async function main() {
   await mkdir(IMG_DIR, { recursive: true });
+  await snapshotSand();
+
   console.log(`Snapshotting ${TOTAL.toLocaleString()} parcels on Polygon + Ethereum…`);
   const statuses = await snapshotMap();
   if (statuses.length !== TOTAL || /[^pecu]/.test(statuses)) throw new Error("Snapshot is incomplete; not writing it.");

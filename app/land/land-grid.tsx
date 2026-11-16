@@ -7,13 +7,12 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconArrowUp,
-  IconLoader2,
   IconRefresh,
   IconSearch,
 } from "@tabler/icons-react";
 import { useShell } from "@/components/shell/app-shell";
 import { LAND_MAX, LAND_MIN, STATUS_LABEL, parseParcelQuery, type ParcelStatus } from "@/lib/land";
-import { formatSnapshotDate } from "@/lib/land-snapshot";
+import { DataSourceLabel, FallbackBanner } from "@/components/data-status";
 import PRESETS from "@/lib/land-presets.json";
 import { useLandWindow } from "./use-land";
 import { ParcelDetails } from "./parcel-details";
@@ -45,7 +44,6 @@ export function LandGrid() {
   const [queryError, setQueryError] = useState<string | null>(null);
 
   const { statuses, source, snapshotDate, isFetching, isError, retryLive } = useLandWindow(x0, y0, COLS, ROWS, { demoMode });
-  const savedOn = snapshotDate ? formatSnapshotDate(snapshotDate) : null;
 
   const select = (x: number, y: number) =>
     openPanel({ id: `parcel:${x},${y}`, title: `LAND (${x}, ${y})`, body: <ParcelDetails key={`${x},${y}`} x={x} y={y} /> });
@@ -114,50 +112,12 @@ export function LandGrid() {
         <Legend className={CELL_STYLES.contract} label={STATUS_LABEL.contract} />
         <Legend className={CELL_STYLES.unminted} label={STATUS_LABEL.unminted} />
         <Legend className="bg-accent border-accent" label="Selected" />
-        <span className="ml-auto flex items-center gap-2 text-xs">
-          {source === "live" && isFetching ? (
-            <>
-              <IconLoader2 size={14} stroke={1.75} className="animate-spin" /> Reading Polygon + Ethereum…
-            </>
-          ) : source === "live" && statuses ? (
-            <>
-              <span className="size-2 rounded-full bg-success" /> Live on-chain data
-            </>
-          ) : source === "snapshot" && savedOn ? (
-            <>
-              <span className="size-2 rounded-full bg-estate" /> Demo mode · snapshot from {savedOn}
-            </>
-          ) : null}
+        <span className="ml-auto">
+          <DataSourceLabel source={source} isFetching={isFetching} snapshotDate={snapshotDate} hasData={!!statuses} />
         </span>
       </div>
 
-      {source === "fallback" && statuses && (
-        <div role="status" className="flex flex-col gap-3 border border-estate/50 bg-estate-soft p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-start gap-2">
-            <IconAlertTriangle size={20} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
-            <span>
-              <span className="font-semibold">Live blockchain data is unavailable.</span>{" "}
-              <span className="text-muted">Showing the saved snapshot{savedOn ? ` from ${savedOn}` : ""} instead.</span>
-            </span>
-          </p>
-          <div className="flex shrink-0 gap-2">
-            <button
-              type="button"
-              onClick={() => retryLive()}
-              className="flex items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
-            >
-              <IconRefresh size={16} stroke={1.75} /> Retry live
-            </button>
-            <button
-              type="button"
-              onClick={() => setDemoMode(true)}
-              className="rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
-            >
-              Stay on snapshot
-            </button>
-          </div>
-        </div>
-      )}
+      {source === "fallback" && statuses && <FallbackBanner snapshotDate={snapshotDate} onRetry={() => retryLive()} />}
 
       {/* Map */}
       <div className="flex flex-col gap-2">
