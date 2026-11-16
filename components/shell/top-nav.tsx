@@ -5,6 +5,7 @@ import { useState } from "react";
 import { IconArrowRight, IconHexagon3d, IconMenu2, IconX } from "@tabler/icons-react";
 import { NAV_ITEMS, isActive } from "@/lib/nav";
 import { AnimatedLetters } from "@/components/animated-letters";
+import { FRAME } from "@/components/frame";
 
 export function TopNav({ pathname }: { pathname: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +19,7 @@ export function TopNav({ pathname }: { pathname: string }) {
 
   return (
     <header className="relative z-40 shrink-0 border-b border-line bg-background">
-      <div className="flex h-16 items-center gap-8 px-6">
+      <div className={`${FRAME} flex h-16 items-center gap-8 px-6 sm:px-10`}>
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <span className="flex size-8 items-center justify-center bg-foreground text-background">
             <IconHexagon3d size={18} stroke={1.75} />

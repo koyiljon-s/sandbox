@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import {
   IconArrowRight,
   IconBox,
@@ -15,13 +14,14 @@ import {
 } from "@tabler/icons-react";
 import { NAV_ITEMS } from "@/lib/nav";
 import { AnimatedLetters } from "@/components/animated-letters";
+import { CellGrid, FramedSection } from "@/components/frame";
 import { ChainSplit, TokenStat } from "./overview-stats";
 
-/** Colour-filled pill tags under the hero, one per token type. */
+/** Colour-tinted tags under the hero, one per token type. */
 const HERO_TAGS = [
-  { label: "LAND", standard: "ERC-721", href: "/land", className: "bg-land-polygon/12 text-land-polygon hover:bg-land-polygon/20" },
-  { label: "SAND", standard: "ERC-20", href: "/economy", className: "bg-accent-soft text-accent hover:bg-accent/15" },
-  { label: "ASSETS", standard: "ERC-1155", href: "/assets", className: "bg-estate-soft text-estate hover:bg-estate/20" },
+  { label: "LAND", standard: "ERC-721", href: "/land", text: "text-land-polygon", tint: "bg-land-polygon/10 group-hover:bg-land-polygon/18" },
+  { label: "SAND", standard: "ERC-20", href: "/economy", text: "text-accent", tint: "bg-accent/8 group-hover:bg-accent/15" },
+  { label: "ASSETS", standard: "ERC-1155", href: "/assets", text: "text-estate", tint: "bg-estate/10 group-hover:bg-estate/18" },
 ];
 
 const TOKENS = [
@@ -84,140 +84,147 @@ export default function OverviewPage() {
   const tour = NAV_ITEMS.filter((item) => item.href !== "/");
 
   return (
-    <div className="flex flex-col gap-14 px-6 py-10">
+    <div className="flex flex-col">
       {/* Hero */}
-      <section className="flex flex-col gap-7 pt-6 sm:pt-12">
-        <p className="label-mono text-accent">01 · Overview</p>
-        <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
-        <p className="max-w-2xl text-xl text-muted">
-          The Sandbox is a virtual world where players build, own and trade. Its land, items and currency are all
-          blockchain tokens, which means anyone can verify who owns what. This demo reads those tokens live.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/land"
-            className="group flex items-center gap-2 bg-accent px-5 py-3 font-medium text-accent-ink hover:bg-accent-strong"
-          >
-            Start exploring
-            <IconArrowRight
-              size={18}
-              stroke={2}
-              className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
-            />
-          </Link>
-          <Link href="/economy" className=" border border-line-strong px-5 py-3 font-medium hover:bg-surface-2">
-            About SAND
-          </Link>
+      <FramedSection divider={false}>
+        <div className="flex flex-col gap-7 px-6 pt-16 pb-14 sm:px-10 sm:pt-24 sm:pb-20">
+          <p className="label-mono text-accent">01 · Overview</p>
+          <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
+          <p className="max-w-2xl text-xl text-muted">
+            The Sandbox is a virtual world where players build, own and trade. Its land, items and currency are all
+            blockchain tokens, which means anyone can verify who owns what. This demo reads those tokens live.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/land"
+              className="group flex items-center gap-2 bg-accent px-5 py-3 font-medium text-accent-ink hover:bg-accent-strong"
+            >
+              Start exploring
+              <IconArrowRight
+                size={18}
+                stroke={2}
+                className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
+              />
+            </Link>
+            <Link href="/economy" className="border border-line-strong px-5 py-3 font-medium hover:bg-surface-2">
+              About SAND
+            </Link>
+          </div>
         </div>
-        <ul aria-label="Token types" className="flex flex-wrap gap-2 pt-2">
+        {/* Token tags as a strip of shared-border cells. */}
+        <CellGrid className="sm:grid-cols-3">
           {HERO_TAGS.map((tag) => (
-            <li key={tag.label}>
-              <Link href={tag.href} className={`wave flex items-center gap-2 px-4 py-2 font-medium ${tag.className}`}>
+            <Link
+              key={tag.label}
+              href={tag.href}
+              className={`wave group relative flex items-center justify-between gap-2 bg-background px-6 py-4 font-medium sm:px-10 ${tag.text}`}
+            >
+              {/* Tint as a layer: a translucent cell background would let the grid lines show through. */}
+              <span aria-hidden="true" className={`absolute inset-0 transition-colors ${tag.tint}`} />
+              <span className="relative">
                 <AnimatedLetters text={tag.label} effect="wave" />
-                <span className="label-mono opacity-70">{tag.standard}</span>
-              </Link>
-            </li>
+              </span>
+              <span className="label-mono relative opacity-70">{tag.standard}</span>
+            </Link>
           ))}
-        </ul>
-      </section>
+        </CellGrid>
+      </FramedSection>
 
       {/* Three token types */}
-      <Section
+      <FramedSection
+        label="02 · Tokens"
         title="Three kinds of token"
         lead="The Sandbox uses a different token standard for each job. That choice is the core idea of this demo."
       >
-        <div className="grid gap-4 lg:grid-cols-3">
+        <CellGrid className="lg:grid-cols-3">
           {TOKENS.map(({ kind, icon: Icon, name, standard, body, href, cta }) => (
-            <article key={name} className="flex flex-col gap-4 border border-line bg-surface p-6">
+            <article key={name} className="flex flex-col gap-5 bg-background p-6 sm:p-10">
               <div className="flex items-center gap-3">
                 <span className="flex size-10 items-center justify-center bg-accent-soft text-accent">
                   <Icon size={22} stroke={1.75} />
                 </span>
                 <div>
-                  <h3 className="text-xl font-bold">{name}</h3>
-                  <p className="font-mono text-sm text-muted">{standard}</p>
+                  <h3 className="text-xl font-semibold tracking-[-0.02em]">{name}</h3>
+                  <p className="label-mono text-muted">{standard}</p>
                 </div>
               </div>
               <TokenStat kind={kind} />
               <p className="flex-1 text-muted">{body}</p>
-              <Link href={href} className="flex w-fit items-center gap-1 font-semibold text-accent hover:underline">
+              <Link href={href} className="flex w-fit items-center gap-1 font-medium text-accent hover:underline">
                 {cta} <IconChevronRight size={18} stroke={1.75} />
               </Link>
             </article>
           ))}
-        </div>
-      </Section>
+        </CellGrid>
+      </FramedSection>
 
       {/* Creator economy */}
-      <Section title="How creators earn" lead="The tokens connect into one loop, from making an item to earning from it.">
-        <ol className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+      <FramedSection
+        label="03 · Economy loop"
+        title="How creators earn"
+        lead="The tokens connect into one loop, from making an item to earning from it."
+      >
+        <CellGrid className="sm:grid-cols-2 lg:grid-cols-5">
           {FLOW.map(({ icon: Icon, title, body }, i) => (
-            <li key={title} className="flex flex-col gap-2 bg-surface p-5">
+            // The 5th step spans both columns on the 2-column layout, so no empty cell shows.
+            <div key={title} className="flex flex-col gap-2 bg-background p-6 sm:last:col-span-2 lg:last:col-span-1">
               <span className="flex items-center justify-between">
                 <Icon size={24} stroke={1.75} className="text-accent" />
-                <span className="font-mono text-sm text-subtle">{i + 1}</span>
+                <span className="label-mono text-subtle">0{i + 1}</span>
               </span>
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-muted">{body}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {/* Two chains */}
-      <Section
-        title="Why two blockchains?"
-        lead="LAND started on Ethereum, which is secure but expensive to use. Polygon is a cheaper network connected to Ethereum by a bridge, and owners can move parcels across. Here's where every parcel is today:"
-      >
-        <div className="border border-line bg-surface p-6">
-          <ChainSplit />
-        </div>
-      </Section>
-
-      {/* How the demo works */}
-      <Section title="How this demo works">
-        <div className="grid gap-4 md:grid-cols-3">
-          {HOW_IT_WORKS.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="flex flex-col gap-2 border border-line bg-surface p-5">
-              <Icon size={22} stroke={1.75} className="text-accent" />
-              <h3 className="font-semibold">{title}</h3>
+              <h3 className="mt-6 text-lg font-semibold">{title}</h3>
               <p className="text-muted">{body}</p>
             </div>
           ))}
+        </CellGrid>
+      </FramedSection>
+
+      {/* Two chains */}
+      <FramedSection
+        label="04 · Networks"
+        title="Why two blockchains?"
+        lead="LAND started on Ethereum, which is secure but expensive to use. Polygon is a cheaper network connected to Ethereum by a bridge, and owners can move parcels across. Here's where every parcel is today:"
+      >
+        <div className="border-t border-line p-6 sm:p-10">
+          <ChainSplit />
         </div>
-      </Section>
+      </FramedSection>
+
+      {/* How the demo works */}
+      <FramedSection label="05 · Under the hood" title="How this demo works">
+        <CellGrid className="md:grid-cols-3">
+          {HOW_IT_WORKS.map(({ icon: Icon, title, body }) => (
+            <div key={title} className="flex flex-col gap-2 bg-background p-6 sm:p-10">
+              <Icon size={22} stroke={1.75} className="text-accent" />
+              <h3 className="mt-4 font-semibold">{title}</h3>
+              <p className="text-muted">{body}</p>
+            </div>
+          ))}
+        </CellGrid>
+      </FramedSection>
 
       {/* Tour */}
-      <Section title="The tour">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <FramedSection label="06 · Tour" title="The tour">
+        <CellGrid className="sm:grid-cols-2 xl:grid-cols-4">
           {tour.map(({ icon: NavIcon, ...item }, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-col gap-2 border border-line bg-surface p-5 hover:border-line-strong hover:bg-surface-2"
-            >
+            <Link key={item.href} href={item.href} className="group flex flex-col gap-2 bg-background p-6 hover:bg-surface sm:p-10">
               <span className="flex items-center justify-between">
                 <NavIcon size={20} stroke={1.75} className="text-accent" />
-                <span className="font-mono text-sm text-subtle">0{i + 2}</span>
+                <span className="label-mono text-subtle">0{i + 2}</span>
               </span>
-              <span className="text-lg font-semibold">{item.label}</span>
+              <span className="mt-6 flex items-center gap-1 text-lg font-semibold">
+                {item.label}
+                <IconArrowRight
+                  size={16}
+                  stroke={2}
+                  className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
+                />
+              </span>
               <span className="text-muted">{item.caption}</span>
             </Link>
           ))}
-        </div>
-      </Section>
+        </CellGrid>
+      </FramedSection>
     </div>
-  );
-}
-
-function Section({ title, lead, children }: { title: string; lead?: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-5">
-      <div className="flex max-w-3xl flex-col gap-2">
-        <h2 className="display text-4xl sm:text-5xl">{title}</h2>
-        {lead && <p className="text-lg text-muted">{lead}</p>}
-      </div>
-      {children}
-    </section>
   );
 }

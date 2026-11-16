@@ -67,7 +67,7 @@ export function LandGrid() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 p-6">
+    <div className="flex flex-1 flex-col gap-4 p-6 sm:p-10">
       {/* Search + presets */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <form onSubmit={onSearch} className="flex flex-col gap-1.5">

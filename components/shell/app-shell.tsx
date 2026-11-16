@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { usePathname } from "next/navigation";
 import { TopNav } from "./top-nav";
 import { SidePanel } from "./side-panel";
+import { FRAME, TopCrosses } from "@/components/frame";
 
 export type PanelContent = {
   /** Stable id so pages can tell what is selected, e.g. "parcel:-12,34". */
@@ -46,12 +47,16 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex h-dvh flex-col overflow-hidden bg-background">
         <TopNav pathname={pathname} />
         <div className="flex min-h-0 flex-1">
-          <main className="flex min-w-0 flex-1 flex-col overflow-y-auto">
-            <div className="flex flex-1 flex-col">{children}</div>
-            <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-6 py-5">
-              <span className="label-mono text-subtle">LAND Explorer · Student project</span>
-              <span className="text-sm text-subtle">Unofficial. Not affiliated with or endorsed by The Sandbox.</span>
-            </footer>
+          {/* overflow-x-hidden clips the "+" marks where the frame meets the window edge. */}
+          <main className="flex min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <div className={`${FRAME} flex flex-1 flex-col`}>
+              <div className="flex flex-1 flex-col">{children}</div>
+              <footer className="relative flex flex-wrap items-center justify-between gap-2 border-t border-line px-6 py-5 sm:px-10">
+                <TopCrosses />
+                <span className="label-mono text-subtle">LAND Explorer · Student project</span>
+                <span className="text-sm text-subtle">Unofficial. Not affiliated with or endorsed by The Sandbox.</span>
+              </footer>
+            </div>
           </main>
           <SidePanel panel={panel} onClose={closePanel} />
         </div>

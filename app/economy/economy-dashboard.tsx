@@ -28,7 +28,7 @@ export function EconomyDashboard() {
   const fellBack = supply.source === "fallback" || transfers.source === "fallback";
 
   return (
-    <div className="flex flex-col gap-8 p-6">
+    <div className="flex flex-col gap-10 p-6 sm:p-10">
       {fellBack && (
         <FallbackBanner
           snapshotDate={supply.snapshotDate ?? transfers.snapshotDate}
@@ -60,7 +60,7 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
         </h2>
         <DataSourceLabel source={source} isFetching={!supply && !isError} snapshotDate={snapshotDate} hasData={!!supply} />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-px border border-line bg-line md:grid-cols-2">
         <Tile
           icon={<IconCoins size={20} stroke={1.75} />}
           label="Total supply"
@@ -102,7 +102,7 @@ function Tile({
   error?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3 border border-line bg-surface p-5">
+    <div className="flex flex-col gap-3 bg-surface p-6">
       <span className="flex items-center gap-2 text-muted">
         <span className="text-accent">{icon}</span>
         {label}
@@ -268,9 +268,9 @@ function UsesSection() {
       <h2 id="uses-heading" className="label-mono text-subtle">
         What SAND is used for
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-px border border-line bg-line sm:grid-cols-2 xl:grid-cols-4">
         {USES.map(({ icon: Icon, title, body }) => (
-          <div key={title} className="flex flex-col gap-2 border border-line bg-surface p-5">
+          <div key={title} className="flex flex-col gap-2 bg-surface p-6">
             <Icon size={22} stroke={1.75} className="text-accent" />
             <h3 className="font-semibold">{title}</h3>
             <p className="text-muted">{body}</p>

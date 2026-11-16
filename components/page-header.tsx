@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { TopCrosses } from "@/components/frame";
 
 type PageHeaderProps = {
   step?: string;
@@ -11,7 +12,8 @@ type PageHeaderProps = {
 
 export function PageHeader({ step, title, description, shows, actions }: PageHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 border-b border-line px-6 py-6 sm:flex-row sm:items-end sm:justify-between">
+    <header className="relative flex flex-col gap-4 border-b border-line px-6 py-10 sm:flex-row sm:items-end sm:justify-between sm:px-10">
+      <TopCrosses />
       <div className="flex max-w-2xl flex-col gap-2">
         {step && <p className="label-mono text-accent">{step}</p>}
         <h1 className="display text-5xl sm:text-6xl">{title}</h1>
