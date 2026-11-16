@@ -49,19 +49,19 @@ export function useSandSnapshot() {
 const sandCall = (chainId: ChainId, functionName: "totalSupply") =>
   ({ chainId, address: CONTRACTS[chainId].sand, abi: sandAbi, functionName }) as const;
 
-export function useSandSupply({ demoMode }: { demoMode: boolean }) {
+export function useSandSupply() {
   const snapshot = useSandSnapshot();
   const live = useReadContracts({
     contracts: SAND_CHAINS.map((id) => sandCall(id, "totalSupply")),
     allowFailure: false,
-    query: { enabled: !demoMode, retry: 1 },
+    query: { retry: 1 },
   });
 
-  const source: DataSource = demoMode ? "snapshot" : live.isError ? "fallback" : "live";
+  const source: DataSource = live.isError ? "fallback" : "live";
   let supply: Record<ChainId, bigint> | null = null;
   if (source === "live" && live.data) {
     supply = { [mainnet.id]: live.data[0], [polygon.id]: live.data[1] } as Record<ChainId, bigint>;
-  } else if (source !== "live" && snapshot.data) {
+  } else if (source === "fallback" && snapshot.data) {
     const s = snapshot.data.totalSupply;
     supply = { [mainnet.id]: BigInt(s[mainnet.id]), [polygon.id]: BigInt(s[polygon.id]) } as Record<ChainId, bigint>;
   }
@@ -73,24 +73,6 @@ export function useSandSupply({ demoMode }: { demoMode: boolean }) {
     isError: !supply && (source === "live" ? live.isError : snapshot.isError),
     retryLive: live.refetch,
   };
-}
-
-/** SAND balance on each chain for a wallet. Live only: balances are personal. */
-export function useSandBalances(address: `0x${string}` | undefined) {
-  const q = useReadContracts({
-    contracts: SAND_CHAINS.map(
-      (chainId) =>
-        ({ chainId, address: CONTRACTS[chainId].sand, abi: sandAbi, functionName: "balanceOf", args: [address!] }) as const,
-    ),
-    allowFailure: true,
-    query: { enabled: !!address, retry: 1 },
-  });
-  const balances = q.data
-    ? (Object.fromEntries(
-        SAND_CHAINS.map((id, i) => [id, q.data[i]?.status === "success" ? (q.data[i].result as bigint) : null]),
-      ) as Record<ChainId, bigint | null>)
-    : null;
-  return { balances, isPending: q.isPending && !!address, isError: q.isError };
 }
 
 async function recentTransfersOn(client: PublicClient, chainId: ChainId): Promise<SandTransfer[]> {
@@ -121,14 +103,14 @@ async function recentTransfersOn(client: PublicClient, chainId: ChainId): Promis
 }
 
 /** Newest SAND transfers across both chains, refreshed every 30 seconds. */
-export function useRecentTransfers({ demoMode }: { demoMode: boolean }) {
+export function useRecentTransfers() {
   const snapshot = useSandSnapshot();
   const ethClient = usePublicClient({ chainId: mainnet.id });
   const polyClient = usePublicClient({ chainId: polygon.id });
 
   const live = useQuery({
     queryKey: ["sand-transfers"],
-    enabled: !demoMode && !!ethClient && !!polyClient,
+    enabled: !!ethClient && !!polyClient,
     refetchInterval: 30_000,
     retry: 1,
     queryFn: async () => {
@@ -140,7 +122,7 @@ export function useRecentTransfers({ demoMode }: { demoMode: boolean }) {
     },
   });
 
-  const source: DataSource = demoMode ? "snapshot" : live.isError && !live.data ? "fallback" : "live";
+  const source: DataSource = live.isError && !live.data ? "fallback" : "live";
   const transfers = source === "live" ? (live.data ?? null) : (snapshot.data?.transfers ?? null);
 
   return {

@@ -1,7 +1,6 @@
 "use client";
 
 import { IconAlertTriangle, IconLoader2, IconRefresh } from "@tabler/icons-react";
-import { useShell } from "@/components/shell/app-shell";
 import type { DataSource } from "@/lib/data-source";
 import { formatSnapshotDate } from "@/lib/land-snapshot";
 
@@ -31,7 +30,7 @@ export function DataSourceLabel({
       </span>
     );
   }
-  if (source !== "live" && snapshotDate) {
+  if (source === "fallback" && snapshotDate) {
     return (
       <span className="flex items-center gap-2 text-xs text-muted">
         <span className="size-2 rounded-full bg-estate" /> Snapshot from {formatSnapshotDate(snapshotDate)}
@@ -43,7 +42,6 @@ export function DataSourceLabel({
 
 /** Shown when live reads failed and the page fell back to the saved snapshot. */
 export function FallbackBanner({ snapshotDate, onRetry }: { snapshotDate?: string; onRetry: () => void }) {
-  const { setDemoMode } = useShell();
   return (
     <div
       role="status"
@@ -65,13 +63,6 @@ export function FallbackBanner({ snapshotDate, onRetry }: { snapshotDate?: strin
           className="flex items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
         >
           <IconRefresh size={16} stroke={1.75} /> Retry live
-        </button>
-        <button
-          type="button"
-          onClick={() => setDemoMode(true)}
-          className="rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
-        >
-          Stay on snapshot
         </button>
       </div>
     </div>

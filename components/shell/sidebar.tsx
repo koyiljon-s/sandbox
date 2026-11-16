@@ -6,9 +6,6 @@ import {
   IconLayoutSidebarLeftExpand,
   IconX,
 } from "@tabler/icons-react";
-import { ThemeToggle } from "./theme-toggle";
-import { NetworkBadge } from "@/components/wallet/network-badge";
-import { WalletButton } from "@/components/wallet/wallet-button";
 
 type SidebarProps = {
   pathname: string;
@@ -17,8 +14,6 @@ type SidebarProps = {
   onToggleCollapse?: () => void;
   /** Mobile drawer: closes it. */
   onClose?: () => void;
-  demoMode: boolean;
-  onDemoModeChange: (value: boolean) => void;
 };
 
 export function Sidebar({
@@ -26,8 +21,6 @@ export function Sidebar({
   collapsed,
   onToggleCollapse,
   onClose,
-  demoMode,
-  onDemoModeChange,
 }: SidebarProps) {
   return (
     <aside
@@ -108,28 +101,6 @@ export function Sidebar({
         </ul>
       </nav>
 
-      {/* Status + wallet */}
-      <div className="flex flex-col gap-2 border-t border-line p-3">
-        <ThemeToggle collapsed={collapsed} />
-        <label
-          title="Use the saved snapshot instead of live blockchain reads"
-          className={`flex cursor-pointer items-center gap-2 rounded-lg py-2 text-sm text-muted hover:bg-surface-2 ${
-            collapsed ? "justify-center px-0" : "px-2"
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={demoMode}
-            onChange={(e) => onDemoModeChange(e.target.checked)}
-            className="size-4 accent-[var(--accent)]"
-            aria-label="Demo mode"
-          />
-          {!collapsed && <span>Demo mode</span>}
-        </label>
-
-        <NetworkBadge collapsed={collapsed} />
-        <WalletButton collapsed={collapsed} />
-      </div>
     </aside>
   );
 }

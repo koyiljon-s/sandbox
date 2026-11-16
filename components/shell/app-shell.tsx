@@ -18,8 +18,6 @@ type ShellContextValue = {
   panel: PanelContent | null;
   openPanel: (content: PanelContent) => void;
   closePanel: () => void;
-  demoMode: boolean;
-  setDemoMode: (value: boolean) => void;
 };
 
 const ShellContext = createContext<ShellContextValue | null>(null);
@@ -37,9 +35,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [collapsedOverride, setCollapsedOverride] = useState<boolean | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [panel, setPanel] = useState<PanelContent | null>(null);
-  // Off by default: show live data, with the saved snapshot as automatic fallback.
-  // On: always use the snapshot (no blockchain calls), e.g. on unreliable Wi-Fi.
-  const [demoMode, setDemoMode] = useState(false);
 
   // Reset per-route UI when navigating (state adjusted during render, no effect needed).
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -57,8 +52,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const closePanel = useCallback(() => setPanel(null), []);
 
   const value = useMemo(
-    () => ({ panel, openPanel, closePanel, demoMode, setDemoMode }),
-    [panel, openPanel, closePanel, demoMode],
+    () => ({ panel, openPanel, closePanel }),
+    [panel, openPanel, closePanel],
   );
 
   return (
@@ -70,8 +65,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             pathname={pathname}
             collapsed={collapsed}
             onToggleCollapse={() => setCollapsedOverride(!collapsed)}
-            demoMode={demoMode}
-            onDemoModeChange={setDemoMode}
           />
         </div>
 
@@ -89,8 +82,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 pathname={pathname}
                 collapsed={false}
                 onClose={() => setDrawerOpen(false)}
-                demoMode={demoMode}
-                onDemoModeChange={setDemoMode}
               />
             </div>
           </div>

@@ -1,5 +1,4 @@
 import { createConfig, http } from "wagmi";
-import { injected } from "wagmi/connectors";
 import { mainnet, polygon } from "wagmi/chains";
 
 /*
@@ -13,8 +12,8 @@ const ETHEREUM_RPC = process.env.NEXT_PUBLIC_ETHEREUM_RPC_URL || "https://ethere
 export const wagmiConfig = createConfig({
   // Polygon first: it's where LAND activity mostly is now.
   chains: [polygon, mainnet],
-  // Browser wallets such as MetaMask. No third-party account or key needed.
-  connectors: [injected()],
+  // Read-only: the app never connects a wallet, so no connectors.
+  connectors: [],
   transports: {
     [polygon.id]: http(POLYGON_RPC),
     [mainnet.id]: http(ETHEREUM_RPC),

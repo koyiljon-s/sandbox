@@ -1,67 +1,44 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
 /*
- * Design tokens. Light is the default (it holds up best on projectors in lit
- * rooms); dark is opt-in via data-theme="dark" on <html>.
+ * Design tokens (dark only), styled after Linear: near-black with a faint cool
+ * tint, surfaces that step up only slightly, very quiet borders, off-white text
+ * and a saturated accent with white text. Accent is this project's blue.
  * Use them in Tailwind as bg-surface, text-muted, border-line, bg-accent, etc.
  */
-:root,
-[data-theme="light"] {
-  color-scheme: light;
-
-  --background: #f5f6f8;
-  --surface: #ffffff;
-  --surface-2: #eef0f4;
-  --surface-3: #dce1e9;
-  --line: #d3d8e1;
-  --line-strong: #aab2c0;
-
-  --foreground: #10131a;
-  --muted: #474e5e;
-  --subtle: #646b7b;
-
-  --accent: #2362eb;
-  --accent-strong: #1b4fc4;
-  --accent-ink: #ffffff;
-  --accent-soft: rgb(35 98 235 / 0.1);
-
-  /* Amber, so ESTATES never get confused with the blue "selected" state. */
-  --estate: #c2410c;
-  --estate-soft: rgb(234 88 12 / 0.18);
-  --land-polygon: #7c3aed;
-  --land-ethereum: #0e7490;
-  --danger: #dc2626;
-  --success: #15803d;
-}
-
-[data-theme="dark"] {
+:root {
   color-scheme: dark;
 
-  --background: #0b0d12;
-  --surface: #12151c;
-  --surface-2: #1a1e28;
-  --surface-3: #232836;
-  --line: #262b38;
-  --line-strong: #353b4c;
+  --background: #08090a;
+  --surface: #0f1011;
+  --surface-2: #161718;
+  --surface-3: #1e1f22;
+  --line: #1f2023;
+  --line-strong: #2c2e33;
 
-  --foreground: #eef0f5;
-  --muted: #9aa1b2;
-  --subtle: #6b7286;
+  --foreground: #f7f8f8;
+  --muted: #8a8f98;
+  /* Linear runs this lower; kept at ~4:1 so captions survive a projector. */
+  --subtle: #70757e;
 
-  /* Lighter blue: #2362eb is too dark to read as text on the dark background. */
-  --accent: #5b8ef5;
-  --accent-strong: #80a8f8;
-  --accent-ink: #0b0d12;
-  --accent-soft: rgb(91 142 245 / 0.14);
+  /* Saturated enough for white button text, light enough to read as text (~4.5:1 both). */
+  --accent: #3d6fe8;
+  --accent-strong: #4f7ef0;
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(61 111 232 / 0.16);
 
-  --estate: #f59e0b;
-  --estate-soft: rgb(245 158 11 / 0.2);
-  --land-polygon: #a78bfa;
-  --land-ethereum: #22d3ee;
-  --danger: #ff6b6b;
-  --success: #4ade80;
+  /* Status colours: slightly desaturated so they sit quietly on near-black. */
+  --estate: #f0a43a;
+  --estate-soft: rgb(240 164 58 / 0.14);
+  --land-polygon: #9d8cf5;
+  --land-ethereum: #4cc3d9;
+  --danger: #eb5757;
+  --success: #4cb782;
+}
+
+/* Thin, dark scrollbars instead of the bright system default. */
+* {
+  scrollbar-color: #2c2e33 transparent;
 }
 
 @theme inline {

@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useConnection } from "wagmi";
 import { mainnet, polygon } from "wagmi/chains";
 import {
   IconArrowRight,
@@ -13,21 +12,19 @@ import {
   IconRefresh,
   IconUsersGroup,
 } from "@tabler/icons-react";
-import { useShell } from "@/components/shell/app-shell";
 import { DataSourceLabel, FallbackBanner } from "@/components/data-status";
-import { shortAddress } from "@/components/wallet/format";
+import { shortAddress } from "@/lib/format";
 import { CONTRACTS, EXPLORERS } from "@/lib/contracts";
 import { formatSand, percent, timeAgo } from "@/lib/format";
-import { SAND_CHAINS, useRecentTransfers, useSandBalances, useSandSupply } from "./use-sand";
+import { useRecentTransfers, useSandSupply } from "./use-sand";
 
 const CHAIN_NAME = { [mainnet.id]: "Ethereum", [polygon.id]: "Polygon" } as const;
 const CHAIN_DOT = { [mainnet.id]: "bg-land-ethereum", [polygon.id]: "bg-land-polygon" } as const;
 const ZERO = "0x0000000000000000000000000000000000000000";
 
 export function EconomyDashboard() {
-  const { demoMode } = useShell();
-  const supply = useSandSupply({ demoMode });
-  const transfers = useRecentTransfers({ demoMode });
+  const supply = useSandSupply();
+  const transfers = useRecentTransfers();
   const fellBack = supply.source === "fallback" || transfers.source === "fallback";
 
   return (
@@ -63,7 +60,7 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
         </h2>
         <DataSourceLabel source={source} isFetching={!supply && !isError} snapshotDate={snapshotDate} hasData={!!supply} />
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Tile
           icon={<IconCoins size={20} stroke={1.75} />}
           label="Total supply"
@@ -84,52 +81,8 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
           }
           error={isError}
         />
-        <BalanceTile />
       </div>
     </section>
-  );
-}
-
-function BalanceTile() {
-  const { address, isConnected } = useConnection();
-  const { balances, isPending, isError } = useSandBalances(isConnected ? address : undefined);
-
-  if (!isConnected) {
-    return (
-      <Tile
-        icon={<IconReceipt size={20} stroke={1.75} />}
-        label="Your balance"
-        value={null}
-        note="Connect a wallet in the sidebar to see your SAND on both chains. Optional: everything else works without it."
-        placeholder="Not connected"
-      />
-    );
-  }
-
-  const total = balances ? SAND_CHAINS.reduce((sum, id) => sum + (balances[id] ?? BigInt(0)), BigInt(0)) : undefined;
-  return (
-    <Tile
-      icon={<IconReceipt size={20} stroke={1.75} />}
-      label="Your balance"
-      value={total !== undefined ? formatSand(total) : null}
-      unit="SAND"
-      error={isError}
-      loading={isPending}
-      note={
-        balances ? (
-          <span className="flex flex-col gap-0.5">
-            {SAND_CHAINS.map((id) => (
-              <span key={id} className="flex items-center gap-2">
-                <span className={`size-2 rounded-full ${CHAIN_DOT[id]}`} />
-                {CHAIN_NAME[id]}: {balances[id] === null ? "unavailable" : formatSand(balances[id]!)}
-              </span>
-            ))}
-          </span>
-        ) : (
-          `Reading ${shortAddress(address)}…`
-        )
-      }
-    />
   );
 }
 
@@ -140,8 +93,6 @@ function Tile({
   unit,
   note,
   error,
-  loading,
-  placeholder,
 }: {
   icon: ReactNode;
   label: string;
@@ -149,8 +100,6 @@ function Tile({
   unit?: string;
   note: ReactNode;
   error?: boolean;
-  loading?: boolean;
-  placeholder?: string;
 }) {
   return (
     <div className="flex flex-col gap-3 border border-line bg-surface p-5">
@@ -163,12 +112,10 @@ function Tile({
           <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
           {unit && <span className="font-semibold text-muted">{unit}</span>}
         </p>
-      ) : placeholder ? (
-        <p className="text-3xl font-bold tracking-tight text-subtle">{placeholder}</p>
       ) : error ? (
         <p className="text-lg font-semibold text-danger">Unavailable</p>
       ) : (
-        <span className="h-9 w-40 animate-pulse bg-surface-3" aria-label={loading ? "Loading" : undefined} />
+        <span className="h-9 w-40 animate-pulse bg-surface-3" aria-label="Loading" />
       )}
       <div className="text-sm text-muted">{note}</div>
     </div>
@@ -275,9 +222,8 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
 }
 
 function AddressLabel({ address, chainId }: { address: string; chainId: keyof typeof CHAIN_NAME }) {
-  const { address: me } = useConnection();
   if (address.toLowerCase() === ZERO) return <span className="font-sans text-muted" title="The zero address: tokens created or destroyed, e.g. by a bridge">Mint / burn</span>;
-  const label = me && me.toLowerCase() === address.toLowerCase() ? "You" : shortAddress(address);
+  const label = shortAddress(address);
   return (
     <a
       href={`${EXPLORERS[chainId]}/address/${address}`}

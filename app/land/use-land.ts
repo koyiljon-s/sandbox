@@ -24,7 +24,7 @@ const ownerOf = (chainId: typeof polygon.id | typeof mainnet.id, tokenId: bigint
  * ownerOf reverts for parcels that don't exist on a chain; allowFailure turns
  * that into a per-parcel "failure" instead of failing the whole batch.
  */
-export function useLandWindow(x0: number, y0: number, cols: number, rows: number, { demoMode }: { demoMode: boolean }) {
+export function useLandWindow(x0: number, y0: number, cols: number, rows: number) {
   const snapshot = useLandSnapshot();
 
   const ids = useMemo(() => {
@@ -42,13 +42,13 @@ export function useLandWindow(x0: number, y0: number, cols: number, rows: number
     contracts,
     allowFailure: true,
     // One retry, so a dead RPC falls back to the snapshot in seconds, not ~10s.
-    query: { enabled: !demoMode, placeholderData: keepPreviousData, retry: 1 },
+    query: { placeholderData: keepPreviousData, retry: 1 },
   });
 
-  const source: DataSource = demoMode ? "snapshot" : live.isError && !live.data ? "fallback" : "live";
+  const source: DataSource = live.isError && !live.data ? "fallback" : "live";
 
   const statuses = useMemo((): ParcelStatus[] | null => {
-    if (source !== "live") {
+    if (source === "fallback") {
       const snap = snapshot.data;
       return snap ? ids.map((id) => snapshotStatus(snap, id) ?? "unminted") : null;
     }
@@ -75,17 +75,17 @@ export function useLandWindow(x0: number, y0: number, cols: number, rows: number
 }
 
 /** Owners on both chains, tokenURI and metadata for one parcel. */
-export function useParcel(x: number, y: number, { demoMode }: { demoMode: boolean }) {
+export function useParcel(x: number, y: number) {
   const tokenId = landTokenId(x, y);
   const snapshot = useLandSnapshot();
 
   const owners = useReadContracts({
     contracts: [ownerOf(polygon.id, tokenId), ownerOf(mainnet.id, tokenId)],
     allowFailure: true,
-    query: { enabled: !demoMode, retry: 1 },
+    query: { retry: 1 },
   });
 
-  const source: DataSource = demoMode ? "snapshot" : owners.isError ? "fallback" : "live";
+  const source: DataSource = owners.isError ? "fallback" : "live";
 
   // ----- Live path -----
   const livePolygonOwner = owners.data?.[0]?.status === "success" ? (owners.data[0].result as `0x${string}`) : undefined;
@@ -122,7 +122,7 @@ export function useParcel(x: number, y: number, { demoMode }: { demoMode: boolea
       ethereumOwner: liveEthereumOwner,
       metadataChain: liveMetadataChain,
       metadata: liveMetadata.data,
-      /** False only in snapshot mode, for parcels saved without details. */
+      /** False only when falling back, for parcels saved without details. */
       hasDetails: true,
       isPending: owners.isPending,
       isError: false,
@@ -133,7 +133,7 @@ export function useParcel(x: number, y: number, { demoMode }: { demoMode: boolea
     };
   }
 
-  // ----- Snapshot path (demo mode, or live failed) -----
+  // ----- Snapshot path (live reads failed) -----
   const snap = snapshot.data;
   const saved = snap?.parcels[tokenId.toString()];
   return {

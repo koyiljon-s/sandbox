@@ -28,3 +28,9 @@ export function timeAgo(iso: string, now = Date.now()) {
   if (abs < 86_400) return rtf.format(Math.round(seconds / 3600), "hour");
   return rtf.format(Math.round(seconds / 86_400), "day");
 }
+
+/** 0x1234…abcd */
+export function shortAddress(address: string | undefined) {
+  if (!address) return "";
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}

@@ -23,7 +23,7 @@ const ROWS = 20;
 const PAN_STEP = 8;
 
 /* PRESETS: parcels checked on-chain while building this page. The snapshot
-   saves full details for these, so they work in demo mode too. */
+   saves full details for these, so they still work offline. */
 
 const CELL_STYLES: Record<ParcelStatus, string> = {
   polygon: "bg-land-polygon/35 border-land-polygon/60 hover:bg-land-polygon/55",
@@ -38,12 +38,12 @@ const clampY0 = (y0: number) => Math.min(LAND_MAX - ROWS + 1, Math.max(LAND_MIN,
 const windowAround = (x: number, y: number) => ({ x0: clampX0(x - COLS / 2), y0: clampY0(y - ROWS / 2) });
 
 export function LandGrid() {
-  const { panel, openPanel, demoMode, setDemoMode } = useShell();
+  const { panel, openPanel } = useShell();
   const [{ x0, y0 }, setOrigin] = useState(() => windowAround(PRESETS[0].x, PRESETS[0].y));
   const [query, setQuery] = useState("");
   const [queryError, setQueryError] = useState<string | null>(null);
 
-  const { statuses, source, snapshotDate, isFetching, isError, retryLive } = useLandWindow(x0, y0, COLS, ROWS, { demoMode });
+  const { statuses, source, snapshotDate, isFetching, isError, retryLive } = useLandWindow(x0, y0, COLS, ROWS);
 
   const select = (x: number, y: number) =>
     openPanel({ id: `parcel:${x},${y}`, title: `LAND (${x}, ${y})`, body: <ParcelDetails key={`${x},${y}`} x={x} y={y} /> });
@@ -138,16 +138,14 @@ export function LandGrid() {
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-surface/90 p-6 text-center">
               <IconAlertTriangle size={28} stroke={1.75} className="text-danger" />
               <p className="max-w-sm text-muted">
-                {source === "live"
-                  ? "Couldn't reach the blockchain, and no saved snapshot was found."
-                  : 'No saved snapshot was found. Run "npm run snapshot", or turn off demo mode.'}
+                Couldn&apos;t reach the blockchain, and no saved snapshot was found.
               </p>
               <button
                 type="button"
-                onClick={() => (source === "live" ? retryLive() : setDemoMode(false))}
+                onClick={() => retryLive()}
                 className="flex items-center gap-2 rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
               >
-                <IconRefresh size={18} stroke={1.75} /> {source === "live" ? "Try again" : "Use live data"}
+                <IconRefresh size={18} stroke={1.75} /> Try again
               </button>
             </div>
           )}

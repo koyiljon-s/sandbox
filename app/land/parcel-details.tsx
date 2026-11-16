@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { IconDatabase, IconExternalLink, IconLoader2, IconRefresh } from "@tabler/icons-react";
 import { mainnet, polygon } from "wagmi/chains";
-import { useConnection } from "wagmi";
 import { CONTRACTS, EXPLORERS } from "@/lib/contracts";
 import { STATUS_LABEL, isHttpsUrl } from "@/lib/land";
 import { formatSnapshotDate } from "@/lib/land-snapshot";
-import { useShell } from "@/components/shell/app-shell";
-import { shortAddress } from "@/components/wallet/format";
+import { shortAddress } from "@/lib/format";
 import { useParcel } from "./use-land";
 
 const STATUS_NOTE = {
@@ -19,9 +17,7 @@ const STATUS_NOTE = {
 } as const;
 
 export function ParcelDetails({ x, y }: { x: number; y: number }) {
-  const { demoMode } = useShell();
-  const p = useParcel(x, y, { demoMode });
-  const { address: me } = useConnection();
+  const p = useParcel(x, y);
   const [imageFailed, setImageFailed] = useState(false);
 
   if (p.isPending) {
@@ -36,9 +32,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
     return (
       <div className="flex flex-col gap-3">
         <p className="text-muted">
-          {p.source === "snapshot"
-            ? 'No saved snapshot was found. Run "npm run snapshot", or turn off demo mode.'
-            : "Couldn't read this parcel from the blockchain, and no saved snapshot was found."}
+          Couldn&apos;t read this parcel from the blockchain, and no saved snapshot was found.
         </p>
         <button
           type="button"
@@ -52,7 +46,6 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
   }
 
   const currentOwner = p.status === "polygon" ? p.polygonOwner : p.status === "ethereum" ? p.ethereumOwner : undefined;
-  const isMine = !!me && !!currentOwner && me.toLowerCase() === currentOwner.toLowerCase();
   const chainId = p.metadataChain;
   const explorer = chainId ? EXPLORERS[chainId] : undefined;
   const md = p.metadata;
@@ -69,7 +62,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
         <p className="flex items-start gap-2 border border-estate/50 bg-estate-soft p-3 text-sm">
           <IconDatabase size={18} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
           <span>
-            {p.source === "fallback" ? "Live data unavailable. " : ""}
+            Live data unavailable.{" "}
             From the snapshot saved {savedOn}
             {p.hasDetails ? "." : ". Owner and metadata are saved only for the preset parcels."}
           </span>
@@ -89,7 +82,6 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
             }`}
           />
           {STATUS_LABEL[p.status]}
-          {isMine && <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs text-accent">You own this</span>}
         </p>
         <p className="text-sm text-muted">{STATUS_NOTE[p.status]}</p>
         {p.source === "fallback" && (

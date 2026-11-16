@@ -3,7 +3,6 @@ import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { AppShell } from "@/components/shell/app-shell";
 import { Providers } from "@/components/providers";
-import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const spaceGrotesk = localFont({
@@ -31,14 +30,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      data-theme="light"
-      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        {/* Applies the saved theme before first paint, so there is no flash. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
       <body className="h-full">
         <Providers>
           <AppShell>{children}</AppShell>
