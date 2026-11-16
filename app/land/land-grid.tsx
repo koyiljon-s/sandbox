@@ -72,7 +72,7 @@ export function LandGrid() {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <form onSubmit={onSearch} className="flex flex-col gap-1.5">
           <div className="flex gap-2">
-            <label className="flex min-w-0 flex-1 items-center gap-2 border border-line-strong bg-surface px-3 focus-within:border-accent sm:w-80 sm:flex-none">
+            <label className="flex min-w-0 flex-1 items-center gap-2 border border-line-strong bg-surface px-4 focus-within:border-accent sm:w-80 sm:flex-none">
               <IconSearch size={18} stroke={1.75} className="shrink-0 text-subtle" />
               <input
                 value={query}
@@ -83,7 +83,7 @@ export function LandGrid() {
                 className="min-w-0 flex-1 bg-transparent py-2.5 outline-none placeholder:text-subtle"
               />
             </label>
-            <button type="submit" className="rounded-lg bg-accent px-4 font-semibold text-accent-ink hover:bg-accent-strong">
+            <button type="submit" className=" bg-accent px-4 font-semibold text-accent-ink hover:bg-accent-strong">
               Go
             </button>
           </div>
@@ -97,7 +97,7 @@ export function LandGrid() {
               key={p.label}
               type="button"
               onClick={() => goTo(p.x, p.y)}
-              className="rounded-lg border border-line-strong px-3 py-1.5 text-sm font-medium hover:bg-surface-2"
+              className=" border border-line-strong px-3 py-1.5 text-sm font-medium hover:bg-surface-2"
             >
               {p.label}
             </button>
@@ -143,7 +143,7 @@ export function LandGrid() {
               <button
                 type="button"
                 onClick={() => retryLive()}
-                className="flex items-center gap-2 rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
+                className="flex items-center gap-2 border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
               >
                 <IconRefresh size={18} stroke={1.75} /> Try again
               </button>
@@ -174,7 +174,7 @@ export function LandGrid() {
                   aria-pressed={selected}
                   title={`(${x}, ${y})${status ? ` · ${STATUS_LABEL[status]}` : ""}`}
                   onClick={() => select(x, y)}
-                  className={`aspect-square rounded-[3px] border ${style}`}
+                  className={`aspect-square border ${style}`}
                 />
               );
             })}
@@ -193,7 +193,7 @@ function PanButton({ label, icon, onClick, disabled }: { label: string; icon: Re
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="flex size-9 items-center justify-center rounded-lg border border-line-strong text-muted hover:bg-surface-2 hover:text-foreground disabled:opacity-40"
+      className="flex size-9 items-center justify-center border border-line-strong text-muted hover:bg-surface-2 hover:text-foreground disabled:opacity-40"
     >
       {icon}
     </button>
@@ -203,7 +203,7 @@ function PanButton({ label, icon, onClick, disabled }: { label: string; icon: Re
 function Legend({ className, label }: { className: string; label: string }) {
   return (
     <span className="flex items-center gap-2">
-      <span className={`size-3.5 rounded-[3px] border ${className}`} />
+      <span className={`size-3.5 border ${className}`} />
       {label}
     </span>
   );

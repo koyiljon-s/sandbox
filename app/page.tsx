@@ -14,7 +14,15 @@ import {
   IconWorld,
 } from "@tabler/icons-react";
 import { NAV_ITEMS } from "@/lib/nav";
+import { AnimatedLetters } from "@/components/animated-letters";
 import { ChainSplit, TokenStat } from "./overview-stats";
+
+/** Colour-filled pill tags under the hero, one per token type. */
+const HERO_TAGS = [
+  { label: "LAND", standard: "ERC-721", href: "/land", className: "bg-land-polygon/12 text-land-polygon hover:bg-land-polygon/20" },
+  { label: "SAND", standard: "ERC-20", href: "/economy", className: "bg-accent-soft text-accent hover:bg-accent/15" },
+  { label: "ASSETS", standard: "ERC-1155", href: "/assets", className: "bg-estate-soft text-estate hover:bg-estate/20" },
+];
 
 const TOKENS = [
   {
@@ -78,21 +86,39 @@ export default function OverviewPage() {
   return (
     <div className="flex flex-col gap-14 px-6 py-10">
       {/* Hero */}
-      <section className="flex max-w-3xl flex-col gap-5">
-        <p className="font-mono text-sm text-accent">01 · Overview</p>
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Explore The Sandbox&apos;s on-chain world</h1>
-        <p className="text-xl text-muted">
+      <section className="flex flex-col gap-7 pt-6 sm:pt-12">
+        <p className="label-mono text-accent">01 · Overview</p>
+        <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
+        <p className="max-w-2xl text-xl text-muted">
           The Sandbox is a virtual world where players build, own and trade. Its land, items and currency are all
           blockchain tokens, which means anyone can verify who owns what. This demo reads those tokens live.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/land" className="flex items-center gap-2 rounded-lg bg-accent px-5 py-3 font-semibold text-accent-ink hover:bg-accent-strong">
-            Start exploring <IconArrowRight size={18} stroke={1.75} />
+          <Link
+            href="/land"
+            className="group flex items-center gap-2 bg-accent px-5 py-3 font-medium text-accent-ink hover:bg-accent-strong"
+          >
+            Start exploring
+            <IconArrowRight
+              size={18}
+              stroke={2}
+              className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
+            />
           </Link>
-          <Link href="/economy" className="rounded-lg border border-line-strong px-5 py-3 font-semibold hover:bg-surface-2">
+          <Link href="/economy" className=" border border-line-strong px-5 py-3 font-medium hover:bg-surface-2">
             About SAND
           </Link>
         </div>
+        <ul aria-label="Token types" className="flex flex-wrap gap-2 pt-2">
+          {HERO_TAGS.map((tag) => (
+            <li key={tag.label}>
+              <Link href={tag.href} className={`wave flex items-center gap-2 px-4 py-2 font-medium ${tag.className}`}>
+                <AnimatedLetters text={tag.label} effect="wave" />
+                <span className="label-mono opacity-70">{tag.standard}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Three token types */}
@@ -104,7 +130,7 @@ export default function OverviewPage() {
           {TOKENS.map(({ kind, icon: Icon, name, standard, body, href, cta }) => (
             <article key={name} className="flex flex-col gap-4 border border-line bg-surface p-6">
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                <span className="flex size-10 items-center justify-center bg-accent-soft text-accent">
                   <Icon size={22} stroke={1.75} />
                 </span>
                 <div>
@@ -188,7 +214,7 @@ function Section({ title, lead, children }: { title: string; lead?: string; chil
   return (
     <section className="flex flex-col gap-5">
       <div className="flex max-w-3xl flex-col gap-2">
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h2>
+        <h2 className="display text-4xl sm:text-5xl">{title}</h2>
         {lead && <p className="text-lg text-muted">{lead}</p>}
       </div>
       {children}

@@ -38,7 +38,7 @@ export function SidePanel({ panel, onClose }: { panel: PanelContent | null; onCl
             type="button"
             onClick={onClose}
             aria-label="Close details"
-            className="flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+            className="flex size-9 items-center justify-center text-muted hover:bg-surface-2 hover:text-foreground"
           >
             <IconX size={20} stroke={1.75} />
           </button>

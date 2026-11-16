@@ -41,7 +41,7 @@ export function TokenStat({ kind }: { kind: "land" | "sand" | "assets" }) {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <p className="flex flex-col">
-      <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
+      <span className="text-4xl font-semibold tracking-[-0.04em] tabular-nums">{value}</span>
       <span className="text-sm text-muted">{label}</span>
     </p>
   );

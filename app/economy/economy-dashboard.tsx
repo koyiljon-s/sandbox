@@ -55,7 +55,7 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
   return (
     <section aria-labelledby="supply-heading" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="supply-heading" className="text-sm font-semibold uppercase tracking-wider text-subtle">
+        <h2 id="supply-heading" className="label-mono text-subtle">
           Supply
         </h2>
         <DataSourceLabel source={source} isFetching={!supply && !isError} snapshotDate={snapshotDate} hasData={!!supply} />
@@ -109,7 +109,7 @@ function Tile({
       </span>
       {value !== null ? (
         <p className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
+          <span className="text-4xl font-semibold tracking-[-0.04em] tabular-nums">{value}</span>
           {unit && <span className="font-semibold text-muted">{unit}</span>}
         </p>
       ) : error ? (
@@ -129,7 +129,7 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
     <section aria-labelledby="transfers-heading" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-col">
-          <h2 id="transfers-heading" className="text-sm font-semibold uppercase tracking-wider text-subtle">
+          <h2 id="transfers-heading" className="label-mono text-subtle">
             Recent transfers
           </h2>
           <p className="text-sm text-muted">Every SAND movement is a public Transfer event. Refreshes every 30 seconds.</p>
@@ -144,7 +144,7 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
             <button
               type="button"
               onClick={() => retryLive()}
-              className="flex items-center gap-2 rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
+              className="flex items-center gap-2 border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
             >
               <IconRefresh size={18} stroke={1.75} /> Try again
             </button>
@@ -206,7 +206,7 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label={`View transaction on ${t.chainId === polygon.id ? "Polygonscan" : "Etherscan"}`}
-                            className="inline-flex size-8 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
+                            className="inline-flex size-8 items-center justify-center text-muted hover:bg-surface-2 hover:text-foreground"
                           >
                             <IconExternalLink size={16} stroke={1.75} />
                           </a>
@@ -265,7 +265,7 @@ const USES = [
 function UsesSection() {
   return (
     <section aria-labelledby="uses-heading" className="flex flex-col gap-3">
-      <h2 id="uses-heading" className="text-sm font-semibold uppercase tracking-wider text-subtle">
+      <h2 id="uses-heading" className="label-mono text-subtle">
         What SAND is used for
       </h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

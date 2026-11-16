@@ -37,7 +37,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
         <button
           type="button"
           onClick={() => p.retryLive()}
-          className="flex items-center justify-center gap-2 rounded-lg border border-line-strong px-4 py-2.5 font-semibold hover:bg-surface-2"
+          className="flex items-center justify-center gap-2 border border-line-strong px-4 py-2.5 font-semibold hover:bg-surface-2"
         >
           <IconRefresh size={18} stroke={1.75} /> Try again
         </button>
@@ -146,7 +146,7 @@ function ExternalButton({ href, children }: { href: string; children: React.Reac
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 rounded-lg border border-line-strong px-4 py-2.5 font-semibold hover:bg-surface-2"
+      className="flex items-center justify-center gap-2 border border-line-strong px-4 py-2.5 font-semibold hover:bg-surface-2"
     >
       {children} <IconExternalLink size={16} stroke={1.75} />
     </a>

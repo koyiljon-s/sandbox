@@ -16,9 +16,6 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/mint", label: "Mint", caption: "Testnet demo", icon: IconSparkles },
 ];
 
-/** Routes where the sidebar starts collapsed to give the main visual more room. */
-export const COLLAPSED_BY_DEFAULT = ["/land"];
-
 export function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }

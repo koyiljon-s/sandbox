@@ -1,44 +1,41 @@
 @import "tailwindcss";
 
 /*
- * Design tokens (dark only), styled after Linear: near-black with a faint cool
- * tint, surfaces that step up only slightly, very quiet borders, off-white text
- * and a saturated accent with white text. Accent is this project's blue.
- * Use them in Tailwind as bg-surface, text-muted, border-line, bg-accent, etc.
+ * Design tokens, in the spirit of brik.space: off-white page, white surfaces,
+ * light grey rules, near-black ink, one electric blue accent, flat (no
+ * shadows). Use them in Tailwind as bg-surface, text-muted, border-line, etc.
  */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --background: #08090a;
-  --surface: #0f1011;
-  --surface-2: #161718;
-  --surface-3: #1e1f22;
-  --line: #1f2023;
-  --line-strong: #2c2e33;
+  --background: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f2f2f2;
+  --surface-3: #e8e8e8;
+  --line: #e5e5e5;
+  --line-strong: #bfbfbf;
 
-  --foreground: #f7f8f8;
-  --muted: #8a8f98;
-  /* Linear runs this lower; kept at ~4:1 so captions survive a projector. */
-  --subtle: #70757e;
+  --foreground: #1f1f1f;
+  --muted: #595959;
+  /* ~4.6:1 on the page background, so small captions stay readable projected. */
+  --subtle: #737373;
 
-  /* Saturated enough for white button text, light enough to read as text (~4.5:1 both). */
-  --accent: #3d6fe8;
-  --accent-strong: #4f7ef0;
+  --accent: #2362eb;
+  --accent-strong: #1b4fc4;
   --accent-ink: #ffffff;
-  --accent-soft: rgb(61 111 232 / 0.16);
+  --accent-soft: rgb(35 98 235 / 0.08);
 
-  /* Status colours: slightly desaturated so they sit quietly on near-black. */
-  --estate: #f0a43a;
-  --estate-soft: rgb(240 164 58 / 0.14);
-  --land-polygon: #9d8cf5;
-  --land-ethereum: #4cc3d9;
-  --danger: #eb5757;
-  --success: #4cb782;
+  /* Colour pops for tags and parcel states. */
+  --estate: #e8590c;
+  --estate-soft: rgb(232 89 12 / 0.1);
+  --land-polygon: #8b3dff;
+  --land-ethereum: #0b8fa8;
+  --danger: #d92d2d;
+  --success: #17a34a;
 }
 
-/* Thin, dark scrollbars instead of the bright system default. */
 * {
-  scrollbar-color: #2c2e33 transparent;
+  scrollbar-color: #bfbfbf transparent;
 }
 
 @theme inline {
@@ -78,4 +75,59 @@ body {
 ::selection {
   background: var(--accent);
   color: var(--accent-ink);
+}
+
+/* ---------- Typography ---------- */
+
+/* Big, tightly set display headlines. */
+@utility display {
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+
+/* Small monospace labels for section names, steps and metadata. */
+@utility label-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- Micro-interactions (all off under reduced motion) ---------- */
+
+/* Nav links: each letter flips over on hover. Wrap letters in .flip-letter. */
+@keyframes flip-letter {
+  from { transform: rotateX(0); }
+  to { transform: rotateX(360deg); }
+}
+.flip {
+  perspective: 150px;
+}
+.flip-letter {
+  display: inline-block;
+  transform-origin: 50% 50% -0.6em;
+  backface-visibility: hidden;
+}
+.flip:hover .flip-letter {
+  animation: flip-letter 0.5s cubic-bezier(0.34, 0.9, 0.36, 1) both;
+}
+
+/* Tags: letters ripple upward on hover. */
+@keyframes wave-letter {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-3px); }
+}
+.wave-letter {
+  display: inline-block;
+}
+.wave:hover .wave-letter {
+  animation: wave-letter 0.45s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip:hover .flip-letter,
+  .wave:hover .wave-letter {
+    animation: none;
+  }
 }

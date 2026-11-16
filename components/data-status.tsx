@@ -60,7 +60,7 @@ export function FallbackBanner({ snapshotDate, onRetry }: { snapshotDate?: strin
         <button
           type="button"
           onClick={onRetry}
-          className="flex items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+          className="flex items-center gap-2 border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
         >
           <IconRefresh size={16} stroke={1.75} /> Retry live
         </button>
