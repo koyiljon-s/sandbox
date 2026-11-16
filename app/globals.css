@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Design tokens. Light is the default (it holds up best on projectors in lit
+ * rooms); dark is opt-in via data-theme="dark" on <html>.
+ * Use them in Tailwind as bg-surface, text-muted, border-line, bg-accent, etc.
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --surface-3: #dce1e9;
+  --line: #d3d8e1;
+  --line-strong: #aab2c0;
+
+  --foreground: #10131a;
+  --muted: #474e5e;
+  --subtle: #646b7b;
+
+  --accent: #2362eb;
+  --accent-strong: #1b4fc4;
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(35 98 235 / 0.1);
+
+  /* Amber, so ESTATES never get confused with the blue "selected" state. */
+  --estate: #c2410c;
+  --estate-soft: rgb(234 88 12 / 0.18);
+  --danger: #dc2626;
+  --success: #15803d;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0b0d12;
+  --surface: #12151c;
+  --surface-2: #1a1e28;
+  --surface-3: #232836;
+  --line: #262b38;
+  --line-strong: #353b4c;
+
+  --foreground: #eef0f5;
+  --muted: #9aa1b2;
+  --subtle: #6b7286;
+
+  /* Lighter blue: #2362eb is too dark to read as text on the dark background. */
+  --accent: #5b8ef5;
+  --accent-strong: #80a8f8;
+  --accent-ink: #0b0d12;
+  --accent-soft: rgb(91 142 245 / 0.14);
+
+  --estate: #f59e0b;
+  --estate-soft: rgb(245 158 11 / 0.2);
+  --danger: #ff6b6b;
+  --success: #4ade80;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-estate: var(--estate);
+  --color-estate-soft: var(--estate-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
   --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-space-grotesk), sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
