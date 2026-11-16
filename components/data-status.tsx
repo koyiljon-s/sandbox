@@ -50,9 +50,9 @@ export function FallbackBanner({ snapshotDate, onRetry }: { snapshotDate?: strin
       <p className="flex items-start gap-2">
         <IconAlertTriangle size={20} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
         <span>
-          <span className="font-semibold">Live blockchain data is unavailable.</span>{" "}
+          <span className="font-semibold">Offline.</span>{" "}
           <span className="text-muted">
-            Showing the saved snapshot{snapshotDate ? ` from ${formatSnapshotDate(snapshotDate)}` : ""} instead.
+            Showing snapshot{snapshotDate ? ` from ${formatSnapshotDate(snapshotDate)}` : ""}.
           </span>
         </span>
       </p>

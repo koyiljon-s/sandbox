@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <footer className="relative flex flex-wrap items-center justify-between gap-2 border-t border-line px-6 py-5 sm:px-10">
                 <TopCrosses />
                 <span className="label-mono text-subtle">LAND Explorer · Student project</span>
-                <span className="text-sm text-subtle">Unofficial. Not affiliated with or endorsed by The Sandbox.</span>
+                <span className="text-sm text-subtle">Unofficial · Not affiliated with The Sandbox</span>
               </footer>
             </div>
           </main>

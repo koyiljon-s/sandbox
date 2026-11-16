@@ -10,8 +10,8 @@ export default function EconomyPage() {
       <PageHeader
         step="03 · Economy"
         title="SAND economy"
-        description="SAND is the ERC-20 token behind The Sandbox: the currency for LAND and ASSETS, and the token used for staking and governance. It lives on Ethereum and is bridged to Polygon."
-        shows="ERC-20 supply, balances & Transfer events"
+        description="The currency of The Sandbox, on Ethereum and Polygon."
+        shows="ERC-20 supply & transfers"
       />
       <EconomyDashboard />
     </div>

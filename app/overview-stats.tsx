@@ -32,10 +32,10 @@ export function useOverviewStats() {
 /** Big number shown on a token card. */
 export function TokenStat({ kind }: { kind: "land" | "sand" | "assets" }) {
   const s = useOverviewStats();
-  if (kind === "assets") return <Stat value="ERC-1155" label="one design, many copies" />;
+  if (kind === "assets") return <Stat value="ERC-1155" label="multi-copy items" />;
   if (!s.ready) return <span className="block h-12 w-40 animate-pulse bg-surface-3" />;
-  if (kind === "land") return <Stat value={fmt(s.minted)} label={`of ${fmt(TOTAL_PARCELS)} parcels minted`} />;
-  return <Stat value={formatSand(s.sandTotal!, { compact: true })} label="SAND, fixed total supply" />;
+  if (kind === "land") return <Stat value={fmt(s.minted)} label={`of ${fmt(TOTAL_PARCELS)} parcels`} />;
+  return <Stat value={formatSand(s.sandTotal!, { compact: true })} label="SAND, fixed supply" />;
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
@@ -86,10 +86,10 @@ export function ChainSplit() {
       <p className="text-sm text-subtle">
         {s.sandPolygon !== undefined && s.sandTotal !== undefined && (
           <>
-            For comparison, only {percent(s.sandPolygon, s.sandTotal)} of SAND has been bridged to Polygon.{" "}
+            Only {percent(s.sandPolygon, s.sandTotal)} of SAND is on Polygon ·{" "}
           </>
         )}
-        From the snapshot saved {s.snapshotDate ? formatSnapshotDate(s.snapshotDate) : ""}.
+        Snapshot {s.snapshotDate ? formatSnapshotDate(s.snapshotDate) : ""}
       </p>
     </div>
   );

@@ -10,10 +10,10 @@ import { shortAddress } from "@/lib/format";
 import { useParcel } from "./use-land";
 
 const STATUS_NOTE = {
-  polygon: "This parcel was moved to Polygon. Its Ethereum copy is held by a contract, so the Polygon owner is the current owner.",
-  ethereum: "This parcel is on Ethereum mainnet and hasn't been moved to Polygon.",
-  contract: "The Ethereum token is held by a contract and there's no Polygon owner. It may be in transit between chains.",
-  unminted: "No token exists for this parcel on either chain. It may be reserved or not yet sold.",
+  polygon: "Moved to Polygon. The Polygon owner is current.",
+  ethereum: "Still on Ethereum.",
+  contract: "Held by a contract, possibly mid-bridge.",
+  unminted: "Not minted on either chain.",
 } as const;
 
 export function ParcelDetails({ x, y }: { x: number; y: number }) {
@@ -32,7 +32,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
     return (
       <div className="flex flex-col gap-3">
         <p className="text-muted">
-          Couldn&apos;t read this parcel from the blockchain, and no saved snapshot was found.
+          Couldn&apos;t load this parcel.
         </p>
         <button
           type="button"
@@ -62,9 +62,8 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
         <p className="flex items-start gap-2 border border-estate/50 bg-estate-soft p-3 text-sm">
           <IconDatabase size={18} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
           <span>
-            Live data unavailable.{" "}
-            From the snapshot saved {savedOn}
-            {p.hasDetails ? "." : ". Owner and metadata are saved only for the preset parcels."}
+            Snapshot {savedOn}
+            {p.hasDetails ? "" : " · owner shown live only"}
           </span>
         </p>
       )}
@@ -120,7 +119,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
           )}
           {p.status === "polygon" && p.ethereumOwner && (
             <ExternalButton href={`${EXPLORERS[mainnet.id]}/nft/${CONTRACTS[mainnet.id].land}/${p.tokenId}`}>
-              Ethereum copy on Etherscan
+              Ethereum copy
             </ExternalButton>
           )}
         </div>

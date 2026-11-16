@@ -66,7 +66,7 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
           label="Total supply"
           value={eth !== undefined ? formatSand(eth) : null}
           unit="SAND"
-          note="Minted on Ethereum, where SAND was created. The supply is fixed."
+          note="Fixed. Created on Ethereum."
           error={isError}
         />
         <Tile
@@ -76,8 +76,8 @@ function SupplyTiles({ supply, source, snapshotDate, isError }: Omit<ReturnType<
           unit="SAND"
           note={
             eth !== undefined && poly !== undefined
-              ? `${percent(poly, eth)} of all SAND. Tokens are locked on Ethereum and re-issued on Polygon, where fees are lower.`
-              : "Tokens locked on Ethereum and re-issued on Polygon."
+              ? `${percent(poly, eth)} of all SAND. Lower fees.`
+              : "Lower fees."
           }
           error={isError}
         />
@@ -132,7 +132,7 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
           <h2 id="transfers-heading" className="label-mono text-subtle">
             Recent transfers
           </h2>
-          <p className="text-sm text-muted">Every SAND movement is a public Transfer event. Refreshes every 30 seconds.</p>
+          <p className="text-sm text-muted">Live · updates every 30s</p>
         </div>
         <DataSourceLabel source={source} isFetching={isFetching} snapshotDate={snapshotDate} hasData={!!transfers} />
       </div>
@@ -175,7 +175,7 @@ function TransfersTable({ transfers, source, snapshotDate, isFetching, isError, 
                   ? (
                     <tr>
                       <td colSpan={5} className="px-4 py-6 text-center text-muted">
-                        No transfers in the last few hours.
+                        No recent transfers.
                       </td>
                     </tr>
                   )
@@ -242,23 +242,23 @@ function AddressLabel({ address, chainId }: { address: string; chainId: keyof ty
 const USES = [
   {
     icon: IconBuildingStore,
-    title: "Buying LAND & ASSETS",
-    body: "SAND is the currency of The Sandbox marketplace: parcels, items and avatars are priced and paid for in it.",
+    title: "Buy",
+    body: "LAND, items and avatars.",
   },
   {
     icon: IconUsersGroup,
     title: "Governance",
-    body: "SAND holders can vote on proposals for the platform through The Sandbox DAO.",
+    body: "Vote in the DAO.",
   },
   {
     icon: IconLock,
     title: "Staking",
-    body: "Holders can lock up SAND to earn rewards, which also takes tokens out of circulation.",
+    body: "Lock it up, earn rewards.",
   },
   {
     icon: IconReceipt,
     title: "Fees",
-    body: "Platform transactions such as marketplace sales carry fees paid in SAND.",
+    body: "Paid on marketplace sales.",
   },
 ];
 

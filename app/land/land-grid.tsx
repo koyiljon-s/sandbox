@@ -59,7 +59,7 @@ export function LandGrid() {
     e.preventDefault();
     const target = parseParcelQuery(query);
     if (!target) {
-      setQueryError(`Enter coordinates like "-164, 41" (each from ${LAND_MIN} to ${LAND_MAX}) or a token ID.`);
+      setQueryError(`Try "-164, 41" (${LAND_MIN} to ${LAND_MAX}) or a token ID.`);
       return;
     }
     setQueryError(null);
@@ -138,7 +138,7 @@ export function LandGrid() {
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-surface/90 p-6 text-center">
               <IconAlertTriangle size={28} stroke={1.75} className="text-danger" />
               <p className="max-w-sm text-muted">
-                Couldn&apos;t reach the blockchain, and no saved snapshot was found.
+                Blockchain unreachable, and no snapshot found.
               </p>
               <button
                 type="button"

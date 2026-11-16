@@ -29,8 +29,8 @@ const TOKENS = [
     kind: "land" as const,
     icon: IconMap2,
     name: "LAND",
-    standard: "ERC-721 · unique NFT",
-    body: "A parcel of the 408 × 408 map. Each one has its own coordinates and owner, so no two are interchangeable.",
+    standard: "ERC-721",
+    body: "One unique parcel of the map.",
     href: "/land",
     cta: "Explore the map",
   },
@@ -38,8 +38,8 @@ const TOKENS = [
     kind: "sand" as const,
     icon: IconCoin,
     name: "SAND",
-    standard: "ERC-20 · fungible token",
-    body: "The currency of the world. Every SAND is identical, so it's counted in amounts, like money.",
+    standard: "ERC-20",
+    body: "The currency. Every coin is identical.",
     href: "/economy",
     cta: "See the economy",
   },
@@ -47,36 +47,36 @@ const TOKENS = [
     kind: "assets" as const,
     icon: IconBox,
     name: "ASSETS",
-    standard: "ERC-1155 · semi-fungible",
-    body: "Items made by creators: a sword or a tree. One design can be minted as many identical copies.",
+    standard: "ERC-1155",
+    body: "Creator items. One design, many copies.",
     href: "/assets",
     cta: "Browse assets",
   },
 ];
 
 const FLOW = [
-  { icon: IconPalette, title: "Create", body: "Design a voxel item in VoxEdit." },
-  { icon: IconBox, title: "Mint", body: "Publish it as an ASSET token." },
-  { icon: IconBuildingStore, title: "Sell", body: "Trade it on the marketplace for SAND." },
-  { icon: IconDeviceGamepad2, title: "Build", body: "Place assets on LAND with Game Maker." },
-  { icon: IconCoin, title: "Earn", body: "Players visit; creators and owners earn SAND." },
+  { icon: IconPalette, title: "Create", body: "Design in VoxEdit." },
+  { icon: IconBox, title: "Mint", body: "Turn it into an ASSET." },
+  { icon: IconBuildingStore, title: "Sell", body: "Sell it for SAND." },
+  { icon: IconDeviceGamepad2, title: "Build", body: "Use it on LAND." },
+  { icon: IconCoin, title: "Earn", body: "Players come, SAND flows." },
 ];
 
 const HOW_IT_WORKS = [
   {
     icon: IconPlugConnected,
-    title: "Reads the contracts directly",
-    body: "No backend or database. The browser calls The Sandbox's public smart contracts on Polygon and Ethereum through an RPC endpoint.",
+    title: "Straight from the chain",
+    body: "No backend. Public contracts only.",
   },
   {
     icon: IconWorld,
-    title: "No wallet or sign-in",
-    body: "Everything shown here is public on the blockchain. Anyone can read who owns what, without an account.",
+    title: "No wallet needed",
+    body: "All of this data is public.",
   },
   {
     icon: IconDatabase,
     title: "Works offline",
-    body: "A saved snapshot of the whole map takes over automatically if the blockchain can't be reached.",
+    body: "A saved snapshot steps in.",
   },
 ];
 
@@ -91,8 +91,7 @@ export default function OverviewPage() {
           <p className="label-mono text-accent">01 · Overview</p>
           <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
           <p className="max-w-2xl text-xl text-muted">
-            The Sandbox is a virtual world where players build, own and trade. Its land, items and currency are all
-            blockchain tokens, which means anyone can verify who owns what. This demo reads those tokens live.
+            A virtual world where land, items and money are tokens. Read live from the blockchain.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
@@ -134,7 +133,7 @@ export default function OverviewPage() {
       <FramedSection
         label="02 · Tokens"
         title="Three kinds of token"
-        lead="The Sandbox uses a different token standard for each job. That choice is the core idea of this demo."
+        lead="A different token standard for each job."
       >
         <CellGrid className="lg:grid-cols-3">
           {TOKENS.map(({ kind, icon: Icon, name, standard, body, href, cta }) => (
@@ -162,7 +161,6 @@ export default function OverviewPage() {
       <FramedSection
         label="03 · Economy loop"
         title="How creators earn"
-        lead="The tokens connect into one loop, from making an item to earning from it."
       >
         <CellGrid className="sm:grid-cols-2 lg:grid-cols-5">
           {FLOW.map(({ icon: Icon, title, body }, i) => (
@@ -183,7 +181,7 @@ export default function OverviewPage() {
       <FramedSection
         label="04 · Networks"
         title="Why two blockchains?"
-        lead="LAND started on Ethereum, which is secure but expensive to use. Polygon is a cheaper network connected to Ethereum by a bridge, and owners can move parcels across. Here's where every parcel is today:"
+        lead="Ethereum is secure but costly. Polygon is cheaper, and parcels can move across."
       >
         <div className="border-t border-line p-6 sm:p-10">
           <ChainSplit />
