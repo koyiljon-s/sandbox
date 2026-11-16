@@ -4,7 +4,7 @@ import { mainnet, polygon } from "wagmi/chains";
 import { LAND_GRID_SIZE } from "@/lib/contracts";
 import { formatSand, percent } from "@/lib/format";
 import { useOverviewStats } from "@/app/overview-stats";
-import { RetroWindow } from "./retro-window";
+import { RetroWindow } from "@/components/retro-window";
 
 const TOTAL = LAND_GRID_SIZE * LAND_GRID_SIZE;
 const fmt = (n: number) => n.toLocaleString();

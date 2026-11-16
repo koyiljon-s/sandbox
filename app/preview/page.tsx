@@ -5,7 +5,7 @@ import { CellGrid, FramedSection } from "@/components/frame";
 import { BlockClock } from "./block-clock";
 import { MiniMap } from "./mini-map";
 import { BigNumbers, ChainCompare, StatHeadline } from "./preview-stats";
-import { RetroWindow } from "./retro-window";
+import { RetroWindow } from "@/components/retro-window";
 
 /*
  * Design preview: the Overview in a retro-desktop style (inspired by

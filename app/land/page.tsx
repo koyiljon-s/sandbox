@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/page-header";
-import { LandGrid } from "./land-grid";
+import { FramedSection } from "@/components/frame";
+import { LandDesktop } from "./land-desktop";
 
 export const metadata: Metadata = { title: "LAND" };
 
 export default function LandPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <PageHeader
-        step="02 · LAND"
-        title="LAND explorer"
-        description="408 × 408 parcels, each an NFT. Click one to see its owner."
-        shows="ERC-721 ownership"
-      />
-      <LandGrid />
+    <div className="flex flex-col">
+      <FramedSection divider={false}>
+        <div className="flex flex-col gap-6 px-6 pt-12 pb-10 sm:px-10 sm:pt-16">
+          <p className="label-mono text-accent">02 · LAND</p>
+          <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] leading-[1] font-medium tracking-[-0.04em]">
+            408 × 408 parcels.
+            <br />
+            <span className="text-muted">Click one.</span>
+          </h1>
+        </div>
+      </FramedSection>
+      <LandDesktop />
     </div>
   );
 }

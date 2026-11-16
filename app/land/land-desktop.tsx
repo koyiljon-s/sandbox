@@ -15,10 +15,10 @@ import { FallbackBanner } from "@/components/data-status";
 import { landTokenId } from "@/lib/contracts";
 import { LAND_MAX, LAND_MIN, STATUS_LABEL, parseParcelQuery, type ParcelStatus } from "@/lib/land";
 import PRESETS from "@/lib/land-presets.json";
-import { useLandWindow } from "@/app/land/use-land";
-import { ParcelDetails } from "@/app/land/parcel-details";
-import { CELL_STYLES, COLS, PAN_STEP, ROWS, clampX0, clampY0, windowAround } from "@/app/land/land-grid";
-import { RetroWindow } from "../retro-window";
+import { RetroWindow } from "@/components/retro-window";
+import { useLandWindow } from "./use-land";
+import { ParcelDetails } from "./parcel-details";
+import { CELL_STYLES, COLS, PAN_STEP, ROWS, clampX0, clampY0, windowAround } from "./map-config";
 
 /** Selected parcel: the typesafe-style pink. */
 const SELECTED = "border-[#3d2d31] bg-[#f285a0]";
