@@ -1,19 +1,19 @@
-export type NavIconName = "home" | "land" | "economy" | "assets" | "mint";
+import { IconCoin, IconCube, IconHome, IconMap2, IconSparkles, type Icon } from "@tabler/icons-react";
 
 export type NavItem = {
   href: string;
   label: string;
   caption: string;
-  icon: NavIconName;
+  icon: Icon;
 };
 
 /** Ordered to follow the presentation story, top to bottom. */
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Overview", caption: "What is The Sandbox?", icon: "home" },
-  { href: "/land", label: "LAND", caption: "Map & ESTATES", icon: "land" },
-  { href: "/economy", label: "Economy", caption: "SAND token", icon: "economy" },
-  { href: "/assets", label: "Assets", caption: "ERC-1155 items", icon: "assets" },
-  { href: "/mint", label: "Mint", caption: "Testnet demo", icon: "mint" },
+  { href: "/", label: "Overview", caption: "What is The Sandbox?", icon: IconHome },
+  { href: "/land", label: "LAND", caption: "Map & ESTATES", icon: IconMap2 },
+  { href: "/economy", label: "Economy", caption: "SAND token", icon: IconCoin },
+  { href: "/assets", label: "Assets", caption: "ERC-1155 items", icon: IconCube },
+  { href: "/mint", label: "Mint", caption: "Testnet demo", icon: IconSparkles },
 ];
 
 /** Routes where the sidebar starts collapsed to give the main visual more room. */

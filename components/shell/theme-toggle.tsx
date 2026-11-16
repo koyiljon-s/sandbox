@@ -2,7 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
-import { Icon } from "./icons";
+import { IconMoon, IconSun } from "@tabler/icons-react";
 
 function readStoredTheme(): Theme | null {
   try {
@@ -45,8 +45,8 @@ export function ThemeToggle({ collapsed }: { collapsed: boolean }) {
         collapsed ? "justify-center px-0" : "px-2"
       }`}
     >
-      <Icon name="moon" width={18} height={18} className="shrink-0 dark:hidden" />
-      <Icon name="sun" width={18} height={18} className="hidden shrink-0 dark:block" />
+      <IconMoon size={18} stroke={1.75} className="shrink-0 dark:hidden" />
+      <IconSun size={18} stroke={1.75} className="hidden shrink-0 dark:block" />
       {!collapsed && (
         <>
           <span className="dark:hidden">Dark mode</span>

@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { NAV_ITEMS, isActive } from "@/lib/nav";
-import { Icon } from "./icons";
+import {
+  IconHexagon3d,
+  IconLayoutSidebarLeftCollapse,
+  IconLayoutSidebarLeftExpand,
+  IconWallet,
+  IconX,
+} from "@tabler/icons-react";
 import { ThemeToggle } from "./theme-toggle";
 
 type SidebarProps = {
@@ -33,7 +39,7 @@ export function Sidebar({
         {!collapsed && (
           <Link href="/" className="flex min-w-0 flex-1 items-center gap-2.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-ink">
-              <Icon name="logo" width={18} height={18} />
+              <IconHexagon3d size={18} stroke={1.75} />
             </span>
             <span className="truncate text-lg font-semibold tracking-tight">LAND Explorer</span>
           </Link>
@@ -46,7 +52,11 @@ export function Sidebar({
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
           >
-            <Icon name="collapse" />
+            {collapsed ? (
+              <IconLayoutSidebarLeftExpand size={20} stroke={1.75} />
+            ) : (
+              <IconLayoutSidebarLeftCollapse size={20} stroke={1.75} />
+            )}
           </button>
         )}
         {onClose && (
@@ -56,7 +66,7 @@ export function Sidebar({
             aria-label="Close menu"
             className="flex size-9 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
           >
-            <Icon name="close" />
+            <IconX size={20} stroke={1.75} />
           </button>
         )}
       </div>
@@ -64,7 +74,7 @@ export function Sidebar({
       {/* Navigation */}
       <nav aria-label="Main" className="flex-1 overflow-y-auto p-2">
         <ul className="flex flex-col gap-1">
-          {NAV_ITEMS.map((item, index) => {
+          {NAV_ITEMS.map(({ icon: NavIcon, ...item }, index) => {
             const active = isActive(pathname, item.href);
             return (
               <li key={item.href}>
@@ -80,7 +90,7 @@ export function Sidebar({
                       : "text-muted hover:bg-surface-2 hover:text-foreground"
                   }`}
                 >
-                  <Icon name={item.icon} className="shrink-0" />
+                  <NavIcon size={20} stroke={1.75} className="shrink-0" />
                   {!collapsed && (
                     <span className="flex min-w-0 flex-col">
                       <span className="font-medium leading-tight">
@@ -132,7 +142,7 @@ export function Sidebar({
             collapsed ? "px-0" : "px-3"
           }`}
         >
-          <Icon name="wallet" width={18} height={18} />
+          <IconWallet size={18} stroke={1.75} />
           {!collapsed && <span>Connect wallet</span>}
         </button>
       </div>

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { PanelContent } from "./app-shell";
-import { Icon } from "./icons";
+import { IconX } from "@tabler/icons-react";
 
 /**
  * Context details for the current selection.
@@ -40,7 +40,7 @@ export function SidePanel({ panel, onClose }: { panel: PanelContent | null; onCl
             aria-label="Close details"
             className="flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-foreground"
           >
-            <Icon name="close" />
+            <IconX size={20} stroke={1.75} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-5">{panel.body}</div>

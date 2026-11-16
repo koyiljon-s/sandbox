@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { NAV_ITEMS } from "@/lib/nav";
-import { Icon } from "@/components/shell/icons";
 
 const SECTION_BLURBS: Record<string, string> = {
   "/land": "Browse the LAND map, see who owns each parcel, and how parcels merge into ESTATES.",
@@ -44,7 +43,7 @@ export default function OverviewPage() {
           The tour
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {sections.map((item, i) => (
+          {sections.map(({ icon: NavIcon, ...item }, i) => (
             <Link
               key={item.href}
               href={item.href}
@@ -52,7 +51,7 @@ export default function OverviewPage() {
             >
               <span className="flex items-center justify-between">
                 <span className="flex size-10 items-center justify-center rounded-lg bg-surface-3 text-accent">
-                  <Icon name={item.icon} />
+                  <NavIcon size={20} stroke={1.75} />
                 </span>
                 <span className="font-mono text-sm text-subtle">0{i + 2}</span>
               </span>
