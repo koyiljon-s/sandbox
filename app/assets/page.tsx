@@ -1,21 +1,23 @@
 import type { Metadata } from "next";
-import { PageHeader, PlaceholderCard } from "@/components/page-header";
+import { FramedSection } from "@/components/frame";
+import { AssetsDesktop } from "./assets-desktop";
 
 export const metadata: Metadata = { title: "Assets" };
 
-export default function Page() {
+export default function AssetsPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <PageHeader
-        step="04 · Assets"
-        title="ASSETS gallery"
-        description="Creator items. One design, many copies."
-        shows="ERC-1155 vs. ERC-721"
-      />
-      <div className="grid gap-4 p-6 sm:p-10 md:grid-cols-2 xl:grid-cols-3">
-        <PlaceholderCard title="Gallery">Items with image and supply.</PlaceholderCard>
-        <PlaceholderCard title="ERC-721 vs. ERC-1155">Unique vs. multi-copy.</PlaceholderCard>
-      </div>
+    <div className="flex flex-col">
+      <FramedSection divider={false}>
+        <div className="flex flex-col gap-6 px-6 pt-12 pb-10 sm:px-10 sm:pt-16">
+          <p className="label-mono text-accent">04 · Assets</p>
+          <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] leading-[1] font-medium tracking-[-0.04em]">
+            One design.
+            <br />
+            <span className="text-muted">Many copies.</span>
+          </h1>
+        </div>
+      </FramedSection>
+      <AssetsDesktop />
     </div>
   );
 }

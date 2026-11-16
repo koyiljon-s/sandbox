@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { IconCoin, IconCube, IconHexagon3d, IconMap2, IconSparkles, type Icon } from "@tabler/icons-react";
+import { IconCoin, IconCube, IconHexagon3d, IconMap2, type Icon } from "@tabler/icons-react";
 import { CellGrid, FramedSection } from "@/components/frame";
 import { RetroWindow } from "@/components/retro-window";
 import { BlockClock } from "@/components/block-clock";
@@ -17,14 +17,12 @@ type App = {
   icon: Icon;
   /** Tile colour block (see .tone-* in globals.css). */
   tone: string;
-  soon?: boolean;
 };
 
 const APPS: App[] = [
   { href: "/land", name: "LAND.app", caption: "Map & owners", icon: IconMap2, tone: "tone-grey" },
   { href: "/economy", name: "Economy.app", caption: "SAND, live", icon: IconCoin, tone: "tone-pink" },
-  { href: "/assets", name: "Assets.app", caption: "Creator items", icon: IconCube, tone: "tone-white", soon: true },
-  { href: "/mint", name: "Mint.app", caption: "Testnet demo", icon: IconSparkles, tone: "tone-white", soon: true },
+  { href: "/assets", name: "Assets.app", caption: "Creator items", icon: IconCube, tone: "tone-white" },
 ];
 
 const FACTS = [
@@ -64,7 +62,7 @@ export default function OverviewPage() {
           <div className="grid min-h-[440px] gap-10 bg-[radial-gradient(var(--line-strong)_1px,transparent_1px)] [background-size:14px_14px] p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* App icons */}
             <nav aria-label="Apps">
-              <ul className="grid grid-cols-2 content-start gap-x-6 gap-y-10 sm:grid-cols-4">
+              <ul className="grid grid-cols-2 content-start gap-x-6 gap-y-10 sm:grid-cols-3">
                 {APPS.map((app) => (
                   <li key={app.href}>
                     <AppIcon {...app} />
@@ -108,7 +106,7 @@ export default function OverviewPage() {
 }
 
 /** A desktop icon: a coloured tile, then a name label that inverts on hover, like a selected icon. */
-function AppIcon({ href, name, caption, icon: Icon, tone, soon }: App) {
+function AppIcon({ href, name, caption, icon: Icon, tone }: App) {
   return (
     <Link href={href} className="group flex flex-col items-center gap-3 text-center outline-none">
       <span
@@ -118,10 +116,7 @@ function AppIcon({ href, name, caption, icon: Icon, tone, soon }: App) {
       </span>
       <span className="flex flex-col items-center gap-1">
         <Label>{name}</Label>
-        <span className="text-sm text-muted">
-          {caption}
-          {soon && <span className="label-mono ml-1.5 text-[#f285a0]">soon</span>}
-        </span>
+        <span className="text-sm text-muted">{caption}</span>
       </span>
     </Link>
   );

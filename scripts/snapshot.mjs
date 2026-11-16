@@ -5,7 +5,10 @@
  *   npm run snapshot
  *
  * Writes public/demo/sand-snapshot.json: SAND total supply on each chain and
- * the newest Transfer events. And public/demo/land-snapshot.json:
+ * the newest Transfer events. public/demo/assets-snapshot.json: the most
+ * recently moved ASSETS, with images saved to public/demo/assets/
+ * (`npm run snapshot -- assets` refreshes only these). And
+ * public/demo/land-snapshot.json:
  *   - statuses: one character per parcel for the whole 408 × 408 map, indexed by
  *     token ID: p = Polygon, e = Ethereum, c = held by contract, u = not minted
  *   - parcels: full details (owners, metadata, local preview image) for the presets
@@ -17,7 +20,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createPublicClient, http } from "viem";
 import { mainnet, polygon } from "viem/chains";
-import { CONTRACTS, ETH_LAND_HOLDER_CONTRACT, LAND_GRID_SIZE, landAbi, sandAbi } from "../lib/contracts.ts";
+import { ASSET_CONTRACT, CONTRACTS, ETH_LAND_HOLDER_CONTRACT, LAND_GRID_SIZE, assetAbi, ipfsToHttp, landAbi, sandAbi } from "../lib/contracts.ts";
 import presets from "../lib/land-presets.json" with { type: "json" };
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -220,9 +223,97 @@ async function snapshotSand() {
   console.log(`Saved public/demo/sand-snapshot.json (${transfers.length} transfers)`);
 }
 
+/* ---------- ASSETS ---------- */
+
+const ASSET_DIR = path.join(OUT_DIR, "assets");
+const ASSET_COUNT = 12;
+const ASSET_BLOCK_CHUNK = 10_000n;
+// Public gateways are slow and rate-limited, so try more than one.
+const GATEWAYS = ["https://gateway.pinata.cloud/ipfs/", "https://ipfs.io/ipfs/"];
+
+async function fetchViaGateways(uri, asJson) {
+  for (const gw of GATEWAYS) {
+    try {
+      const res = await fetch(ipfsToHttp(uri, gw), { signal: AbortSignal.timeout(30_000) });
+      if (!res.ok) continue;
+      return asJson ? await res.json() : res;
+    } catch {
+      // try the next gateway
+    }
+  }
+  return undefined;
+}
+
+async function saveAssetImage(uri, name) {
+  const res = await fetchViaGateways(uri, false);
+  if (!res) return undefined;
+  const type = (res.headers.get("content-type") ?? "").split(";")[0];
+  const ext = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif" }[type];
+  if (!ext) return undefined;
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length > MAX_IMAGE_BYTES) return undefined;
+  await writeFile(path.join(ASSET_DIR, `${name}.${ext}`), buf);
+  return `/demo/assets/${name}.${ext}`;
+}
+
+async function snapshotAssets() {
+  console.log("Snapshotting recent ASSETS (metadata and images over IPFS, can be slow)…");
+  await mkdir(ASSET_DIR, { recursive: true });
+  const client = clients.polygon;
+  const transferSingle = assetAbi.find((i) => i.type === "event" && i.name === "TransferSingle");
+
+  // Walk back in chunks until we have enough distinct items, newest first.
+  const latest = await client.getBlockNumber();
+  const seen = new Map(); // id -> newest log
+  for (let i = 0n; i < 8n && seen.size < ASSET_COUNT * 2; i++) {
+    const to = latest - i * ASSET_BLOCK_CHUNK;
+    const logs = await client.getLogs({ address: ASSET_CONTRACT, event: transferSingle, fromBlock: to - ASSET_BLOCK_CHUNK + 1n, toBlock: to });
+    for (const log of logs.reverse()) if (!seen.has(log.args.id)) seen.set(log.args.id, log);
+  }
+
+  const items = [];
+  for (const [id, log] of seen) {
+    if (items.length >= ASSET_COUNT) break;
+    try {
+      const uri = await client.readContract({ address: ASSET_CONTRACT, abi: assetAbi, functionName: "uri", args: [id] });
+      const md = await fetchViaGateways(uri, true);
+      if (!md || typeof md.name !== "string") continue;
+      const attrs = Array.isArray(md.attributes) ? md.attributes : [];
+      const trait = (t) => attrs.find((a) => a?.trait_type === t)?.value;
+      // Full ID: item IDs embed the creator, so shorter slices collide between items.
+      const file = id.toString(16);
+      const image = typeof md.image === "string" ? await saveAssetImage(md.image, file) : undefined;
+      const block = await client.getBlock({ blockNumber: log.blockNumber });
+      items.push({
+        id: id.toString(),
+        name: md.name,
+        type: typeof trait("Type") === "string" ? trait("Type") : undefined,
+        catalyst: typeof trait("Catalyst") === "string" ? trait("Catalyst") : undefined,
+        image,
+        externalUrl: typeof md.external_url === "string" && md.external_url.startsWith("https://") ? md.external_url : undefined,
+        lastTransfer: {
+          hash: log.transactionHash,
+          copies: log.args.value.toString(),
+          timestamp: new Date(Number(block.timestamp) * 1000).toISOString(),
+        },
+      });
+      console.log(`  ${md.name}${image ? " + image" : " (no image)"}`);
+    } catch {
+      // Skip items whose metadata can't be read.
+    }
+  }
+
+  const snapshot = { createdAt: new Date().toISOString(), items };
+  await writeFile(path.join(OUT_DIR, "assets-snapshot.json"), JSON.stringify(snapshot));
+  console.log(`Saved public/demo/assets-snapshot.json (${items.length} items)`);
+}
+
 async function main() {
   await mkdir(IMG_DIR, { recursive: true });
+  // `npm run snapshot -- assets` refreshes only the ASSETS data.
+  if (process.argv[2] === "assets") return snapshotAssets();
   await snapshotSand();
+  await snapshotAssets();
 
   console.log(`Snapshotting ${TOTAL.toLocaleString()} parcels on Polygon + Ethereum…`);
   const statuses = await snapshotMap();

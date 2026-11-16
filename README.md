@@ -11,7 +11,7 @@ A student demo that explores **The Sandbox** through its public smart contracts:
 | **Overview** | A launcher desktop: each page is an "app", plus live block numbers and the key numbers | Blocks, tokens, two chains |
 | **LAND** | A retro "desktop" of windows: live 408 × 408 map, search, parcel info, legend, and live counts of what's in view | ERC-721 ownership and metadata |
 | **Economy** | A desktop of windows: live transfer feed, supply split, uses and contracts | ERC-20 supply and `Transfer` events |
-| Assets, Mint | Placeholders, not built yet | ERC-1155, writing to a testnet |
+| **Assets** | A desktop of windows: gallery of recent creator items, item info, live activity | ERC-1155: one design, many copies |
 
 ## Getting started
 
@@ -44,7 +44,8 @@ cp .env.example .env.local
 | `npm run dev` | Start the dev server |
 | `npm run build` / `npm start` | Production build / serve it |
 | `npm run lint` | ESLint |
-| `npm run snapshot` | Save fresh offline data to `public/demo/` (about 1 minute) |
+| `npm run snapshot` | Save fresh offline data to `public/demo/` (a few minutes) |
+| `npm run snapshot -- assets` | Refresh only the Assets gallery (items and images) |
 
 ## How it works
 
@@ -62,7 +63,7 @@ flowchart LR
 
 ### Verified contracts
 
-Checked on-chain (name and symbol) on 16 Nov 2026. The Polygon addresses match [The Sandbox's bridge docs](https://docs.sandbox.game/en/owners/tsb-bridge).
+Checked on-chain (name and symbol) on 16–17 Nov 2026. The LAND and SAND Polygon addresses match [The Sandbox's bridge docs](https://docs.sandbox.game/en/owners/tsb-bridge). ASSETS isn't in those docs; it was found through block-explorer records and confirmed on-chain as ERC-1155 ("The Sandbox's ASSETs").
 
 | Contract | Network | Address |
 |---|---|---|
@@ -70,6 +71,7 @@ Checked on-chain (name and symbol) on 16 Nov 2026. The Polygon addresses match [
 | SAND | Polygon | `0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683` |
 | LAND | Ethereum | `0x5CC5B05a8A13E3fBDB0BB9FcCd98D38e50F90c38` |
 | SAND | Ethereum | `0x3845badAde8e6dFF049820680d1F14bD3903a5d0` |
+| ASSETS (ERC-1155) | Polygon | `0xdbc52cd5b8eda1a7bcbabb838ca927d23e3673e5` |
 
 ### Things learned the hard way
 
@@ -84,7 +86,7 @@ app/
   page.tsx              Overview (launcher desktop)
   land/                 LAND desktop (map, find, parcel info, legend), data hooks
   economy/              SAND desktop (transfers, supply, uses, contracts), data hooks
-  assets/, mint/        Placeholder pages
+  assets/               ASSETS desktop (gallery, item info, activity), data hooks
   icon.svg, apple-icon.tsx
 components/
   shell/                Top nav, app shell
@@ -109,6 +111,7 @@ Light, flat and structural: a framed centre column with visible rules and "+" ma
 - **ESTATES** (merged parcels) aren't shown yet.
 - The map assumes **y increases downward**; not yet checked against The Sandbox's own map.
 - Some preview images are missing upstream (for example, LAND #100000 returns 404).
+- ASSETS metadata and images live on IPFS, and public gateways are slow (5–25 s) or rate-limited. That's why the gallery uses the snapshot; only the activity feed is live.
 - The explanatory text on SAND uses and the creator loop is simplified; check it against [The Sandbox's docs](https://docs.sandbox.game) before relying on it.
 
 ## Before presenting

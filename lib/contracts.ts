@@ -44,6 +44,33 @@ export const sandAbi = parseAbi([
 ]);
 
 /*
+ * ASSETS: creator items, ERC-1155, on Polygon. Not in the official bridge docs;
+ * found via block explorer records and verified on-chain on 2026-11-17:
+ * supportsInterface(ERC-1155) = true, name "The Sandbox's ASSETs", symbol "ASSET".
+ * Like LAND it can't list its items, so recent ones come from transfer events.
+ * uri(id) returns ipfs:// metadata (name, image, attributes).
+ */
+export const ASSET_CONTRACT = "0xdbc52cd5b8eda1a7bcbabb838ca927d23e3673e5" as const;
+
+export const assetAbi = parseAbi([
+  "function uri(uint256 id) view returns (string)",
+  "function balanceOf(address owner, uint256 id) view returns (uint256)",
+  "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
+]);
+
+/*
+ * IPFS gateway for ASSET metadata and images. Public gateways are slow and
+ * rate-limited (measured 5–25 s, or 429s), which is why the snapshot saves
+ * item images locally. Override with NEXT_PUBLIC_IPFS_GATEWAY if you have one.
+ */
+export const IPFS_GATEWAY = "https://gateway.pinata.cloud/ipfs/";
+
+/** ipfs://CID/path → gateway URL; other URLs pass through. */
+export function ipfsToHttp(uri: string, gateway: string = IPFS_GATEWAY) {
+  return uri.startsWith("ipfs://") ? gateway + uri.slice("ipfs://".length) : uri;
+}
+
+/*
  * Ethereum contract holding ~51k LAND (as of 2026-11-16), including parcels
  * that also have an owner on Polygon. Probably a bridge, but it is NOT the
  * bridge listed in the official docs and could not be identified, so the UI
