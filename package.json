@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "wrangler dev",
     "lint": "eslint",
-    "snapshot": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/snapshot.mjs"
+    "snapshot": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/snapshot.mjs",
+    "deploy": "next build && wrangler deploy",
+    "preview": "next build && wrangler dev"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.52.0",
@@ -26,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4.163.0"
   }
 }

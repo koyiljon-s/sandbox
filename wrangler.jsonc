@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // An assets-only Worker: it serves the static site that `next build` writes
+  // to out/ (output: "export" in next.config.ts). No server code runs.
+  "name": "land-explorer",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./out",
+    // /land → land.html, and unknown paths get the exported 404 page.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  // Cloudflare creates the DNS record and certificate for this on deploy.
+  // The orcyn.xyz zone must be in the same Cloudflare account.
+  "routes": [{ "pattern": "sandbox.orcyn.xyz", "custom_domain": true }]
+}

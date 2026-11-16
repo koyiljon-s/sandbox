@@ -42,7 +42,9 @@ cp .env.example .env.local
 | Command | What it does |
 |---|---|
 | `npm run dev` | Start the dev server |
-| `npm run build` / `npm start` | Production build / serve it |
+| `npm run build` | Static export to `out/` |
+| `npm start` | Serve `out/` locally in the Cloudflare Worker runtime (after a build) |
+| `npm run deploy` | Build and deploy to Cloudflare from your machine (needs `npx wrangler login` once) |
 | `npm run lint` | ESLint |
 | `npm run snapshot` | Save fresh offline data to `public/demo/` (a few minutes) |
 | `npm run snapshot -- assets` | Refresh only the Assets gallery (items and images) |
@@ -113,6 +115,16 @@ Light, flat and structural: a framed centre column with visible rules and "+" ma
 - Some preview images are missing upstream (for example, LAND #100000 returns 404).
 - ASSETS metadata and images live on IPFS, and public gateways are slow (5–25 s) or rate-limited. That's why the gallery uses the snapshot; only the activity feed is live.
 - The explanatory text on SAND uses and the creator loop is simplified; check it against [The Sandbox's docs](https://docs.sandbox.game) before relying on it.
+
+## Deployment
+
+Live at **https://sandbox.orcyn.xyz**, as a Cloudflare Worker that serves the static export (Workers Static Assets). No server code runs: every page reads the blockchain from the browser.
+
+- `next.config.ts` sets `output: "export"`, so `npm run build` writes the site to `out/`.
+- `wrangler.jsonc` defines the Worker (`land-explorer`), points it at `out/`, and attaches the custom domain `sandbox.orcyn.xyz`. Cloudflare creates the DNS record and certificate.
+- Deploys run automatically on every push to `main` (Cloudflare Workers Builds, connected to this repo): build command `npm run build`, deploy command `npx wrangler deploy`.
+- RPC URLs (`NEXT_PUBLIC_*`) are baked in at **build** time, so set them as build variables in the Worker's Cloudflare settings, not as runtime variables.
+- Snapshots in `public/demo/` ship with the build. Run `npm run snapshot`, commit, and push to refresh them online.
 
 ## Before presenting
 
