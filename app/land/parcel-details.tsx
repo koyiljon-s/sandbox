@@ -1,10 +1,13 @@
 "use client";
 
-import { IconExternalLink, IconLoader2, IconRefresh } from "@tabler/icons-react";
+import { useState } from "react";
+import { IconDatabase, IconExternalLink, IconLoader2, IconRefresh } from "@tabler/icons-react";
 import { mainnet, polygon } from "wagmi/chains";
 import { useConnection } from "wagmi";
 import { CONTRACTS, EXPLORERS } from "@/lib/contracts";
 import { STATUS_LABEL, isHttpsUrl } from "@/lib/land";
+import { formatSnapshotDate } from "@/lib/land-snapshot";
+import { useShell } from "@/components/shell/app-shell";
 import { shortAddress } from "@/components/wallet/format";
 import { useParcel } from "./use-land";
 
@@ -16,8 +19,10 @@ const STATUS_NOTE = {
 } as const;
 
 export function ParcelDetails({ x, y }: { x: number; y: number }) {
-  const p = useParcel(x, y);
+  const { demoMode } = useShell();
+  const p = useParcel(x, y, { demoMode });
   const { address: me } = useConnection();
+  const [imageFailed, setImageFailed] = useState(false);
 
   if (p.isPending) {
     return (
@@ -30,10 +35,14 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
   if (p.isError || !p.status) {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-muted">Couldn&apos;t read this parcel from the blockchain.</p>
+        <p className="text-muted">
+          {p.source === "snapshot"
+            ? 'No saved snapshot was found. Run "npm run snapshot", or turn off demo mode.'
+            : "Couldn't read this parcel from the blockchain, and no saved snapshot was found."}
+        </p>
         <button
           type="button"
-          onClick={() => p.refetch()}
+          onClick={() => p.retryLive()}
           className="flex items-center justify-center gap-2 rounded-lg border border-line-strong px-4 py-2.5 font-semibold hover:bg-surface-2"
         >
           <IconRefresh size={18} stroke={1.75} /> Try again
@@ -47,15 +56,29 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
   const chainId = p.metadataChain;
   const explorer = chainId ? EXPLORERS[chainId] : undefined;
   const md = p.metadata;
-  const image = isHttpsUrl(md?.image) ? md.image : undefined;
+  // Live metadata links to remote HTTPS images; the snapshot stores local copies.
+  const rawImage = md?.image;
+  const isLocalCopy = p.source !== "live" && typeof rawImage === "string" && rawImage.startsWith("/demo/images/");
+  const image = !imageFailed && (isLocalCopy || isHttpsUrl(rawImage)) ? rawImage : undefined;
+  const savedOn = p.snapshotDate ? formatSnapshotDate(p.snapshotDate) : "";
   const experience = md?.sandbox?.name;
 
   return (
     <div className="flex flex-col gap-5">
+      {p.source !== "live" && (
+        <p className="flex items-start gap-2 border border-estate/50 bg-estate-soft p-3 text-sm">
+          <IconDatabase size={18} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
+          <span>
+            {p.source === "fallback" ? "Live data unavailable. " : ""}
+            From the snapshot saved {savedOn}
+            {p.hasDetails ? "." : ". Owner and metadata are saved only for the preset parcels."}
+          </span>
+        </p>
+      )}
       {image && (
         // Remote preview from the metadata; next/image would need every host allow-listed.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={image} alt={`Preview of ${md?.name ?? `LAND (${x}, ${y})`}`} className="aspect-video w-full border border-line bg-surface-2 object-cover" />
+        <img src={image} alt={`Preview of ${md?.name ?? `LAND (${x}, ${y})`}`} className="aspect-video w-full border border-line bg-surface-2 object-cover" onError={() => setImageFailed(true)} />
       )}
 
       <div className="flex flex-col gap-1.5">
@@ -69,6 +92,11 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
           {isMine && <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs text-accent">You own this</span>}
         </p>
         <p className="text-sm text-muted">{STATUS_NOTE[p.status]}</p>
+        {p.source === "fallback" && (
+          <button type="button" onClick={() => p.retryLive()} className="flex w-fit items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
+            <IconRefresh size={16} stroke={1.75} /> Retry live
+          </button>
+        )}
       </div>
 
       <dl className="flex flex-col divide-y divide-line border border-line">
@@ -76,6 +104,7 @@ export function ParcelDetails({ x, y }: { x: number; y: number }) {
         <Row label="Token ID" value={p.tokenId.toString()} mono />
         {currentOwner && <Row label="Owner" value={shortAddress(currentOwner)} title={currentOwner} mono />}
         {chainId && <Row label="Network" value={chainId === polygon.id ? "Polygon" : "Ethereum"} />}
+        {!currentOwner && !p.hasDetails && p.status !== "unminted" && <Row label="Owner" value="Live only" />}
         {experience && <Row label="Experience" value={experience} />}
         {md?.properties
           ?.filter((prop) => prop.trait_type === "Land Type")

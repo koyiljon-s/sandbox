@@ -37,8 +37,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [collapsedOverride, setCollapsedOverride] = useState<boolean | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [panel, setPanel] = useState<PanelContent | null>(null);
-  // On by default: the demo must never depend on live RPC or a wallet working.
-  const [demoMode, setDemoMode] = useState(true);
+  // Off by default: show live data, with the saved snapshot as automatic fallback.
+  // On: always use the snapshot (no blockchain calls), e.g. on unreliable Wi-Fi.
+  const [demoMode, setDemoMode] = useState(false);
 
   // Reset per-route UI when navigating (state adjusted during render, no effect needed).
   const [prevPathname, setPrevPathname] = useState(pathname);

@@ -112,7 +112,7 @@ export function Sidebar({
       <div className="flex flex-col gap-2 border-t border-line p-3">
         <ThemeToggle collapsed={collapsed} />
         <label
-          title="Use cached sample data instead of live chain calls"
+          title="Use the saved snapshot instead of live blockchain reads"
           className={`flex cursor-pointer items-center gap-2 rounded-lg py-2 text-sm text-muted hover:bg-surface-2 ${
             collapsed ? "justify-center px-0" : "px-2"
           }`}

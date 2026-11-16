@@ -13,6 +13,8 @@ import {
 } from "@tabler/icons-react";
 import { useShell } from "@/components/shell/app-shell";
 import { LAND_MAX, LAND_MIN, STATUS_LABEL, parseParcelQuery, type ParcelStatus } from "@/lib/land";
+import { formatSnapshotDate } from "@/lib/land-snapshot";
+import PRESETS from "@/lib/land-presets.json";
 import { useLandWindow } from "./use-land";
 import { ParcelDetails } from "./parcel-details";
 
@@ -21,12 +23,8 @@ const COLS = 32;
 const ROWS = 20;
 const PAN_STEP = 8;
 
-/** Parcels whose data was checked on-chain while building this page. */
-const PRESETS = [
-  { label: "LAND #100000", x: -164, y: 41 },
-  { label: "Map centre", x: 0, y: 0 },
-  { label: "Top-left corner", x: LAND_MIN, y: LAND_MIN },
-];
+/* PRESETS: parcels checked on-chain while building this page. The snapshot
+   saves full details for these, so they work in demo mode too. */
 
 const CELL_STYLES: Record<ParcelStatus, string> = {
   polygon: "bg-land-polygon/35 border-land-polygon/60 hover:bg-land-polygon/55",
@@ -41,12 +39,13 @@ const clampY0 = (y0: number) => Math.min(LAND_MAX - ROWS + 1, Math.max(LAND_MIN,
 const windowAround = (x: number, y: number) => ({ x0: clampX0(x - COLS / 2), y0: clampY0(y - ROWS / 2) });
 
 export function LandGrid() {
-  const { panel, openPanel } = useShell();
+  const { panel, openPanel, demoMode, setDemoMode } = useShell();
   const [{ x0, y0 }, setOrigin] = useState(() => windowAround(PRESETS[0].x, PRESETS[0].y));
   const [query, setQuery] = useState("");
   const [queryError, setQueryError] = useState<string | null>(null);
 
-  const { statuses, isPending, isFetching, isError, refetch } = useLandWindow(x0, y0, COLS, ROWS);
+  const { statuses, source, snapshotDate, isFetching, isError, retryLive } = useLandWindow(x0, y0, COLS, ROWS, { demoMode });
+  const savedOn = snapshotDate ? formatSnapshotDate(snapshotDate) : null;
 
   const select = (x: number, y: number) =>
     openPanel({ id: `parcel:${x},${y}`, title: `LAND (${x}, ${y})`, body: <ParcelDetails key={`${x},${y}`} x={x} y={y} /> });
@@ -116,17 +115,49 @@ export function LandGrid() {
         <Legend className={CELL_STYLES.unminted} label={STATUS_LABEL.unminted} />
         <Legend className="bg-accent border-accent" label="Selected" />
         <span className="ml-auto flex items-center gap-2 text-xs">
-          {isFetching ? (
+          {source === "live" && isFetching ? (
             <>
               <IconLoader2 size={14} stroke={1.75} className="animate-spin" /> Reading Polygon + Ethereum…
             </>
-          ) : isError ? null : (
+          ) : source === "live" && statuses ? (
             <>
               <span className="size-2 rounded-full bg-success" /> Live on-chain data
             </>
-          )}
+          ) : source === "snapshot" && savedOn ? (
+            <>
+              <span className="size-2 rounded-full bg-estate" /> Demo mode · snapshot from {savedOn}
+            </>
+          ) : null}
         </span>
       </div>
+
+      {source === "fallback" && statuses && (
+        <div role="status" className="flex flex-col gap-3 border border-estate/50 bg-estate-soft p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2">
+            <IconAlertTriangle size={20} stroke={1.75} className="mt-0.5 shrink-0 text-estate" />
+            <span>
+              <span className="font-semibold">Live blockchain data is unavailable.</span>{" "}
+              <span className="text-muted">Showing the saved snapshot{savedOn ? ` from ${savedOn}` : ""} instead.</span>
+            </span>
+          </p>
+          <div className="flex shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={() => retryLive()}
+              className="flex items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+            >
+              <IconRefresh size={16} stroke={1.75} /> Retry live
+            </button>
+            <button
+              type="button"
+              onClick={() => setDemoMode(true)}
+              className="rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+            >
+              Stay on snapshot
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Map */}
       <div className="flex flex-col gap-2">
@@ -143,23 +174,27 @@ export function LandGrid() {
         </div>
 
         <div className="relative overflow-x-auto border border-line bg-surface p-3">
-          {isError && !statuses && (
+          {isError && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-surface/90 p-6 text-center">
               <IconAlertTriangle size={28} stroke={1.75} className="text-danger" />
-              <p className="max-w-sm text-muted">Couldn&apos;t reach the blockchain. The RPC endpoint may be busy or offline.</p>
+              <p className="max-w-sm text-muted">
+                {source === "live"
+                  ? "Couldn't reach the blockchain, and no saved snapshot was found."
+                  : 'No saved snapshot was found. Run "npm run snapshot", or turn off demo mode.'}
+              </p>
               <button
                 type="button"
-                onClick={() => refetch()}
+                onClick={() => (source === "live" ? retryLive() : setDemoMode(false))}
                 className="flex items-center gap-2 rounded-lg border border-line-strong px-4 py-2 font-semibold hover:bg-surface-2"
               >
-                <IconRefresh size={18} stroke={1.75} /> Try again
+                <IconRefresh size={18} stroke={1.75} /> {source === "live" ? "Try again" : "Use live data"}
               </button>
             </div>
           )}
           <div
             role="grid"
             aria-label="LAND map"
-            aria-busy={isPending}
+            aria-busy={!statuses}
             className="grid min-w-[640px] gap-0.5"
             style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
           >
