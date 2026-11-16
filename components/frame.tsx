@@ -37,6 +37,7 @@ export function FramedSection({
   lead,
   children,
   divider = true,
+  tone,
 }: {
   label?: string;
   title?: string;
@@ -44,9 +45,12 @@ export function FramedSection({
   children?: ReactNode;
   /** The first band under the nav already has the nav's line above it. */
   divider?: boolean;
+  /** Full-width colour band (see .tone-* in globals.css). */
+  tone?: "dark" | "pink";
 }) {
+  const toneClass = tone ? `tone-${tone} bg-background text-foreground` : "";
   return (
-    <section className={`relative ${divider ? "border-t border-line" : ""}`}>
+    <section className={`relative ${divider ? "border-t border-line" : ""} ${toneClass}`}>
       <TopCrosses />
       {(label || title || lead) && (
         <div className="flex max-w-3xl flex-col gap-3 px-6 pt-12 pb-10 sm:px-10">
