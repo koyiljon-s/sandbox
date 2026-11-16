@@ -1,9 +1,9 @@
 /**
- * Splits text into letters for the hover animations in globals.css.
- * Put "flip" or "wave" on a parent element; this renders the letters.
+ * Splits text into letters for the hover flip in globals.css.
+ * Put "flip" on a parent element; this renders the letters.
  * Screen readers get the plain text once, not letter by letter.
  */
-export function AnimatedLetters({ text, effect }: { text: string; effect: "flip" | "wave" }) {
+export function AnimatedLetters({ text }: { text: string }) {
   return (
     <>
       <span className="sr-only">{text}</span>
@@ -11,8 +11,8 @@ export function AnimatedLetters({ text, effect }: { text: string; effect: "flip"
         {Array.from(text).map((char, i) => (
           <span
             key={i}
-            className={effect === "flip" ? "flip-letter" : "wave-letter"}
-            style={{ animationDelay: `${i * (effect === "flip" ? 25 : 30)}ms` }}
+            className="flip-letter"
+            style={{ animationDelay: `${i * 25}ms` }}
           >
             {char === " " ? " " : char}
           </span>

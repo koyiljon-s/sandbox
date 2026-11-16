@@ -8,9 +8,9 @@ A student demo that explores **The Sandbox** through its public smart contracts:
 
 | Page | What you see | Blockchain concept |
 |---|---|---|
-| **Overview** | The three token types, the creator loop, where all 166,464 parcels live | ERC-721 vs ERC-20 vs ERC-1155 |
+| **Overview** | A launcher desktop: each page is an "app", plus live block numbers and the key numbers | Blocks, tokens, two chains |
 | **LAND** | A retro "desktop" of windows: live 408 × 408 map, search, parcel info, legend, and live counts of what's in view | ERC-721 ownership and metadata |
-| **Economy** | SAND supply on both chains, live transfer feed | ERC-20 supply and `Transfer` events |
+| **Economy** | A desktop of windows: live transfer feed, supply split, uses and contracts | ERC-20 supply and `Transfer` events |
 | Assets, Mint | Placeholders, not built yet | ERC-1155, writing to a testnet |
 
 ## Getting started
@@ -81,16 +81,16 @@ Checked on-chain (name and symbol) on 16 Nov 2026. The Polygon addresses match [
 
 ```
 app/
-  page.tsx              Overview
+  page.tsx              Overview (launcher desktop)
   land/                 LAND desktop (map, find, parcel info, legend), data hooks
-  economy/              SAND dashboard, data hooks
+  economy/              SAND desktop (transfers, supply, uses, contracts), data hooks
   assets/, mint/        Placeholder pages
-  preview/              Design preview of the Overview (not in the nav)
   icon.svg, apple-icon.tsx
 components/
   shell/                Top nav, app shell
   frame.tsx             Visible page frame, section lines, "+" marks, cell grids
   retro-window.tsx      Desktop-style window (striped title bar, version stamp)
+  block-clock.tsx       Live latest block on Ethereum and Polygon
   data-status.tsx       Live / snapshot label, offline banner
 lib/
   contracts.ts          Addresses, ABIs, token ID ↔ coordinates
@@ -102,7 +102,7 @@ public/demo/            Snapshot data and saved preview images
 
 ## Design
 
-Light, flat and structural: a framed centre column with visible rules and "+" marks, shared-border grids, square corners, large tightly-set headlines and small monospace labels. The LAND page uses retro desktop windows and colour blocks (near-black `#1f1f1f`, pink `#f285a0`, grey, white); any block can switch palette with a `tone-*` class (see `app/globals.css`). Type is [Space Grotesk](https://github.com/floriankarsten/space-grotesk) (OFL), icons are [Tabler](https://tabler.io/icons) (MIT). Hover animations respect the system's "reduce motion" setting.
+Light, flat and structural: a framed centre column with visible rules and "+" marks, shared-border grids, square corners, large tightly-set headlines and small monospace labels. Every page uses retro desktop windows and colour blocks (near-black `#1f1f1f`, pink `#f285a0`, grey, white); any block can switch palette with a `tone-*` class (see `app/globals.css`). Type is [Space Grotesk](https://github.com/floriankarsten/space-grotesk) (OFL), icons are [Tabler](https://tabler.io/icons) (MIT). Hover animations respect the system's "reduce motion" setting.
 
 ## Known limitations
 

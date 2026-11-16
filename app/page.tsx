@@ -1,236 +1,136 @@
 import Link from "next/link";
-import {
-  IconArrowRight,
-  IconBox,
-  IconBuildingStore,
-  IconChevronRight,
-  IconCoin,
-  IconDatabase,
-  IconDeviceGamepad2,
-  IconMap2,
-  IconPalette,
-  IconPlugConnected,
-  IconWorld,
-} from "@tabler/icons-react";
-import { NAV_ITEMS } from "@/lib/nav";
-import { AnimatedLetters } from "@/components/animated-letters";
+import type { ReactNode } from "react";
+import { IconCoin, IconCube, IconHexagon3d, IconMap2, IconSparkles, type Icon } from "@tabler/icons-react";
 import { CellGrid, FramedSection } from "@/components/frame";
-import { ShaderGradient } from "@/components/ui/shader-gradient";
+import { RetroWindow } from "@/components/retro-window";
+import { BlockClock } from "@/components/block-clock";
 
-/**
- * Pastel tints of the project's colours: accent blue, Polygon violet, the hero
- * tags' pink and Ethereum teal. The shader takes at most 4 colours,
- * and they flow in this order, so pink sits next to violet for a smooth blend.
+/*
+ * The Overview: a launcher desktop where each page is an "app",
+ * matching the window style of the LAND and Economy pages.
  */
-const HERO_GRADIENT = ["#A9C1F7", "#CDB5FF", "#F9C0CF", "#A7E0EA"];
-import { ChainSplit, TokenStat } from "./overview-stats";
 
-/** Tags under the hero, one per token type. */
-const HERO_TAGS = [
-  { label: "LAND", standard: "ERC-721", href: "/land" },
-  { label: "SAND", standard: "ERC-20", href: "/economy" },
-  { label: "ASSETS", standard: "ERC-1155", href: "/assets" },
+type App = {
+  href: string;
+  name: string;
+  caption: string;
+  icon: Icon;
+  /** Tile colour block (see .tone-* in globals.css). */
+  tone: string;
+  soon?: boolean;
+};
+
+const APPS: App[] = [
+  { href: "/land", name: "LAND.app", caption: "Map & owners", icon: IconMap2, tone: "tone-grey" },
+  { href: "/economy", name: "Economy.app", caption: "SAND, live", icon: IconCoin, tone: "tone-pink" },
+  { href: "/assets", name: "Assets.app", caption: "Creator items", icon: IconCube, tone: "tone-white", soon: true },
+  { href: "/mint", name: "Mint.app", caption: "Testnet demo", icon: IconSparkles, tone: "tone-white", soon: true },
 ];
 
-const TOKENS = [
-  {
-    kind: "land" as const,
-    icon: IconMap2,
-    name: "LAND",
-    standard: "ERC-721",
-    body: "One unique parcel of the map.",
-    href: "/land",
-    cta: "Explore the map",
-  },
-  {
-    kind: "sand" as const,
-    icon: IconCoin,
-    name: "SAND",
-    standard: "ERC-20",
-    body: "The currency. Every coin is identical.",
-    href: "/economy",
-    cta: "See the economy",
-  },
-  {
-    kind: "assets" as const,
-    icon: IconBox,
-    name: "ASSETS",
-    standard: "ERC-1155",
-    body: "Creator items. One design, many copies.",
-    href: "/assets",
-    cta: "Browse assets",
-  },
-];
-
-const FLOW = [
-  { icon: IconPalette, title: "Create", body: "Design in VoxEdit." },
-  { icon: IconBox, title: "Mint", body: "Turn it into an ASSET." },
-  { icon: IconBuildingStore, title: "Sell", body: "Sell it for SAND." },
-  { icon: IconDeviceGamepad2, title: "Build", body: "Use it on LAND." },
-  { icon: IconCoin, title: "Earn", body: "Players come, SAND flows." },
-];
-
-const HOW_IT_WORKS = [
-  {
-    icon: IconPlugConnected,
-    title: "Straight from the chain",
-    body: "No backend. Public contracts only.",
-  },
-  {
-    icon: IconWorld,
-    title: "No wallet needed",
-    body: "All of this data is public.",
-  },
-  {
-    icon: IconDatabase,
-    title: "Works offline",
-    body: "A saved snapshot steps in.",
-  },
+const FACTS = [
+  { value: "166,464", label: "parcels of LAND" },
+  { value: "3B", label: "SAND, fixed supply" },
+  { value: "2", label: "chains: Ethereum + Polygon" },
 ];
 
 export default function OverviewPage() {
-  const tour = NAV_ITEMS.filter((item) => item.href !== "/");
-
   return (
     <div className="flex flex-col">
-      {/* Hero */}
+      {/* Header */}
       <FramedSection divider={false}>
-        <div className="relative isolate flex flex-col gap-7 px-6 pt-16 pb-14 sm:px-10 sm:pt-24 sm:pb-20">
-          {/* Light theme forced: "auto" would switch to the dark palette for visitors whose OS is in dark mode. */}
-          <ShaderGradient className="-z-10" colors={HERO_GRADIENT} theme="light" intensity={0.85} />
+        <div className="flex flex-col gap-6 px-6 pt-12 pb-10 sm:px-10 sm:pt-16">
           <p className="label-mono text-accent">01 · Overview</p>
-          <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
-          <p className="max-w-2xl text-xl text-muted">
-            A virtual world where land, items and money are tokens. Read live from the blockchain.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/land"
-              className="group flex items-center gap-2 bg-accent px-5 py-3 font-medium text-accent-ink hover:bg-accent-strong"
-            >
-              Start exploring
-              <IconArrowRight
-                size={18}
-                stroke={2}
-                className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
-              />
-            </Link>
-            <Link href="/economy" className="border border-line-strong bg-background px-5 py-3 font-medium hover:bg-surface-2">
-              About SAND
-            </Link>
+          <h1 className="text-[clamp(2.5rem,6vw,5.5rem)] leading-[1] font-medium tracking-[-0.04em]">
+            The Sandbox, on-chain.
+            <br />
+            <span className="text-muted">Open an app to explore.</span>
+          </h1>
+        </div>
+      </FramedSection>
+
+      {/* The desktop */}
+      <FramedSection>
+        <div className="tone-dark border-t border-line bg-background text-foreground">
+          {/* Menu bar */}
+          <div className="tone-white flex h-9 items-center justify-between gap-4 border-b border-foreground bg-background px-4 text-foreground">
+            <span className="label-mono flex items-center gap-2">
+              <IconHexagon3d size={15} stroke={2} />
+              LAND Explorer
+              <span className="hidden text-muted sm:inline">· System 0.1</span>
+            </span>
+            <span className="label-mono hidden text-muted sm:inline">Ethereum · Polygon</span>
+          </div>
+
+          <div className="grid min-h-[440px] gap-10 bg-[radial-gradient(var(--line-strong)_1px,transparent_1px)] [background-size:14px_14px] p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_340px]">
+            {/* App icons */}
+            <nav aria-label="Apps">
+              <ul className="grid grid-cols-2 content-start gap-x-6 gap-y-10 sm:grid-cols-4">
+                {APPS.map((app) => (
+                  <li key={app.href}>
+                    <AppIcon {...app} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Windows */}
+            <div className="flex flex-col gap-6">
+              <RetroWindow title="About.txt" className="tone-white">
+                <div className="flex flex-col gap-2 px-4 py-3 font-mono text-sm">
+                  <p>The Sandbox is a virtual world.</p>
+                  <p>Its land, items and money are tokens.</p>
+                  <p className="text-muted">This app reads them live.</p>
+                </div>
+              </RetroWindow>
+              <RetroWindow title="Status" version="live" className="tone-grey">
+                <BlockClock />
+              </RetroWindow>
+            </div>
           </div>
         </div>
-        {/* Token tags as a strip of shared-border cells. */}
-        <CellGrid className="sm:grid-cols-3">
-          {HERO_TAGS.map((tag) => (
-            <Link
-              key={tag.label}
-              href={tag.href}
-              className="wave flex items-center justify-between gap-2 bg-[#fad1dc] px-6 py-4 font-medium text-[#3d2d31] transition-colors hover:bg-[#f7bdcc] sm:px-10"
-            >
-              <span>
-                <AnimatedLetters text={tag.label} effect="wave" />
-              </span>
-              <span className="label-mono opacity-80">{tag.standard}</span>
-            </Link>
-          ))}
-        </CellGrid>
       </FramedSection>
 
-      {/* Three token types */}
-      <FramedSection
-        label="02 · Tokens"
-        title="Three kinds of token"
-        lead="A different token standard for each job."
-      >
-        <CellGrid className="lg:grid-cols-3">
-          {TOKENS.map(({ kind, icon: Icon, name, standard, body, href, cta }) => (
-            <article key={name} className="flex flex-col gap-5 bg-background p-6 sm:p-10">
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center bg-accent-soft text-accent">
-                  <Icon size={22} stroke={1.75} />
-                </span>
-                <div>
-                  <h3 className="text-xl font-semibold tracking-[-0.02em]">{name}</h3>
-                  <p className="label-mono text-muted">{standard}</p>
-                </div>
-              </div>
-              <TokenStat kind={kind} />
-              <p className="flex-1 text-muted">{body}</p>
-              <Link href={href} className="flex w-fit items-center gap-1 font-medium text-accent hover:underline">
-                {cta} <IconChevronRight size={18} stroke={1.75} />
-              </Link>
-            </article>
-          ))}
-        </CellGrid>
-      </FramedSection>
-
-      {/* Creator economy */}
-      <FramedSection
-        label="03 · Economy loop"
-        title="How creators earn"
-      >
-        <CellGrid className="sm:grid-cols-2 lg:grid-cols-5">
-          {FLOW.map(({ icon: Icon, title, body }, i) => (
-            // The 5th step spans both columns on the 2-column layout, so no empty cell shows.
-            <div key={title} className="flex flex-col gap-2 bg-background p-6 sm:last:col-span-2 lg:last:col-span-1">
-              <span className="flex items-center justify-between">
-                <Icon size={24} stroke={1.75} className="text-accent" />
-                <span className="label-mono text-subtle">0{i + 1}</span>
-              </span>
-              <h3 className="mt-6 text-lg font-semibold">{title}</h3>
-              <p className="text-muted">{body}</p>
-            </div>
-          ))}
-        </CellGrid>
-      </FramedSection>
-
-      {/* Two chains */}
-      <FramedSection
-        label="04 · Networks"
-        title="Why two blockchains?"
-        lead="Ethereum is secure but costly. Polygon is cheaper, and parcels can move across."
-      >
-        <div className="border-t border-line p-6 sm:p-10">
-          <ChainSplit />
-        </div>
-      </FramedSection>
-
-      {/* How the demo works */}
-      <FramedSection label="05 · Under the hood" title="How this demo works">
+      {/* Key facts */}
+      <FramedSection label="At a glance" title="The numbers" tone="pink">
         <CellGrid className="md:grid-cols-3">
-          {HOW_IT_WORKS.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="flex flex-col gap-2 bg-background p-6 sm:p-10">
-              <Icon size={22} stroke={1.75} className="text-accent" />
-              <h3 className="mt-4 font-semibold">{title}</h3>
-              <p className="text-muted">{body}</p>
+          {FACTS.map((f) => (
+            <div key={f.label} className="flex flex-col gap-2 bg-background p-6 sm:p-10">
+              <span className="text-[clamp(3rem,7vw,6rem)] leading-none font-medium tracking-[-0.05em] tabular-nums">
+                {f.value}
+              </span>
+              <span className="label-mono text-muted">{f.label}</span>
             </div>
-          ))}
-        </CellGrid>
-      </FramedSection>
-
-      {/* Tour */}
-      <FramedSection label="06 · Tour" title="The tour">
-        <CellGrid className="sm:grid-cols-2 xl:grid-cols-4">
-          {tour.map(({ icon: NavIcon, ...item }, i) => (
-            <Link key={item.href} href={item.href} className="group flex flex-col gap-2 bg-background p-6 hover:bg-surface sm:p-10">
-              <span className="flex items-center justify-between">
-                <NavIcon size={20} stroke={1.75} className="text-accent" />
-                <span className="label-mono text-subtle">0{i + 2}</span>
-              </span>
-              <span className="mt-6 flex items-center gap-1 text-lg font-semibold">
-                {item.label}
-                <IconArrowRight
-                  size={16}
-                  stroke={2}
-                  className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
-                />
-              </span>
-              <span className="text-muted">{item.caption}</span>
-            </Link>
           ))}
         </CellGrid>
       </FramedSection>
     </div>
+  );
+}
+
+/** A desktop icon: a coloured tile, then a name label that inverts on hover, like a selected icon. */
+function AppIcon({ href, name, caption, icon: Icon, tone, soon }: App) {
+  return (
+    <Link href={href} className="group flex flex-col items-center gap-3 text-center outline-none">
+      <span
+        className={`${tone} flex size-24 items-center justify-center border border-foreground bg-background text-foreground transition-transform duration-200 group-hover:-translate-y-1 group-focus-visible:-translate-y-1 motion-reduce:transition-none`}
+      >
+        <Icon size={40} stroke={1.5} />
+      </span>
+      <span className="flex flex-col items-center gap-1">
+        <Label>{name}</Label>
+        <span className="text-sm text-muted">
+          {caption}
+          {soon && <span className="label-mono ml-1.5 text-[#f285a0]">soon</span>}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function Label({ children }: { children: ReactNode }) {
+  return (
+    <span className="label-mono px-1.5 py-0.5 group-hover:bg-foreground group-hover:text-background group-focus-visible:bg-foreground group-focus-visible:text-background">
+      {children}
+    </span>
   );
 }

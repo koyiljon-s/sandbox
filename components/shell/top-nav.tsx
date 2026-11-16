@@ -41,7 +41,7 @@ export function TopNav({ pathname }: { pathname: string }) {
                       active ? "bg-foreground text-background" : "text-muted hover:text-foreground"
                     }`}
                   >
-                    <AnimatedLetters text={item.label} effect="flip" />
+                    <AnimatedLetters text={item.label} />
                   </Link>
                 </li>
               );

@@ -18,7 +18,7 @@ import PRESETS from "@/lib/land-presets.json";
 import { RetroWindow } from "@/components/retro-window";
 import { useLandWindow } from "./use-land";
 import { ParcelDetails } from "./parcel-details";
-import { CELL_STYLES, COLS, PAN_STEP, ROWS, clampX0, clampY0, windowAround } from "./map-config";
+import { CELL_STYLES, clampOrigin, useMapSize, windowAround } from "./map-config";
 
 /** Selected parcel: the typesafe-style pink. */
 const SELECTED = "border-[#3d2d31] bg-[#f285a0]";
@@ -29,19 +29,32 @@ const SELECTED = "border-[#3d2d31] bg-[#f285a0]";
  */
 export function LandDesktop() {
   const first = PRESETS[0];
-  const [{ x0, y0 }, setOrigin] = useState(() => windowAround(first.x, first.y));
+  // 32 × 20 on larger screens, 12 × 12 on phones.
+  const size = useMapSize();
+  const { cols: COLS, rows: ROWS, step: PAN_STEP } = size;
+  const [{ x0, y0 }, setOrigin] = useState(() => windowAround(first.x, first.y, size));
   // Start with a parcel selected, so Parcel Info is never empty on first load.
   const [selected, setSelected] = useState<{ x: number; y: number } | null>({ x: first.x, y: first.y });
+
+  // When the map size changes (phone ↔ wider screen, rotation), re-centre on
+  // the selected parcel, or on the old centre (adjusted during render).
+  const [prevSize, setPrevSize] = useState(size);
+  if (prevSize !== size) {
+    setPrevSize(size);
+    const cx = selected?.x ?? x0 + Math.floor(prevSize.cols / 2);
+    const cy = selected?.y ?? y0 + Math.floor(prevSize.rows / 2);
+    setOrigin(windowAround(cx, cy, size));
+  }
   const [query, setQuery] = useState("");
   const [queryError, setQueryError] = useState<string | null>(null);
 
   const { statuses, source, snapshotDate, isFetching, isError, retryLive } = useLandWindow(x0, y0, COLS, ROWS);
 
   const goTo = (x: number, y: number) => {
-    setOrigin(windowAround(x, y));
+    setOrigin(windowAround(x, y, size));
     setSelected({ x, y });
   };
-  const pan = (dx: number, dy: number) => setOrigin({ x0: clampX0(x0 + dx), y0: clampY0(y0 + dy) });
+  const pan = (dx: number, dy: number) => setOrigin(clampOrigin(x0 + dx, y0 + dy, size));
 
   function onSearch(e: FormEvent) {
     e.preventDefault();
@@ -68,9 +81,11 @@ export function LandDesktop() {
 
         {/* The desktop */}
         <div className="tone-dark border-t border-line bg-background bg-[radial-gradient(var(--line-strong)_1px,transparent_1px)] [background-size:14px_14px] p-4 sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Phones: Map → Parcel Info → Find → Legend, so details sit right under the map.
+              lg+: map on the left, the other windows stacked on the right. */}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_auto_1fr]">
             {/* Map */}
-            <RetroWindow title="LAND Map 2.0" version={mapStatus} tone="dark" className="self-start">
+            <RetroWindow title="LAND Map 2.0" version={mapStatus} tone="dark" className="order-1 self-start lg:order-none lg:row-span-3">
               <div className="relative overflow-x-auto p-3">
                 {isError && (
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/90 p-6 text-center">
@@ -89,7 +104,7 @@ export function LandDesktop() {
                   role="grid"
                   aria-label="LAND map"
                   aria-busy={!statuses}
-                  className="grid min-w-[560px] gap-0.5"
+                  className={`grid gap-0.5 ${COLS > 16 ? "min-w-[560px]" : ""}`}
                   style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
                 >
                   {Array.from({ length: ROWS * COLS }, (_, i) => {
@@ -116,7 +131,7 @@ export function LandDesktop() {
                   })}
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-3 border-t border-line px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-3 py-2">
                 <span className="label-mono text-muted">
                   x {x0}→{x0 + COLS - 1} · y {y0}→{y0 + ROWS - 1}
                 </span>
@@ -129,9 +144,8 @@ export function LandDesktop() {
               </div>
             </RetroWindow>
 
-            <div className="flex flex-col gap-6">
               {/* Search */}
-              <RetroWindow title="Find" tone="pink">
+              <RetroWindow title="Find" tone="pink" className="order-3 self-start lg:order-none">
                 <form onSubmit={onSearch} className="flex flex-col gap-3 p-4">
                   <div className="flex">
                     <label className="flex min-w-0 flex-1 items-center gap-2 border border-foreground bg-surface-3 px-3 focus-within:bg-background">
@@ -169,7 +183,7 @@ export function LandDesktop() {
               <RetroWindow
                 title="Parcel Info"
                 version={selected ? `#${landTokenId(selected.x, selected.y)}` : undefined}
-                className="tone-grey"
+                className="tone-grey order-2 self-start lg:order-none"
               >
                 <div className="p-4">
                   {selected ? (
@@ -181,7 +195,7 @@ export function LandDesktop() {
               </RetroWindow>
 
               {/* Legend */}
-              <RetroWindow title="Legend.txt" className="tone-white">
+              <RetroWindow title="Legend.txt" className="tone-white order-4 self-start lg:order-none">
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-2 p-4">
                   <LegendItem className={CELL_STYLES.polygon} label="Polygon" />
                   <LegendItem className={CELL_STYLES.ethereum} label="Ethereum" />
@@ -189,7 +203,6 @@ export function LandDesktop() {
                   <LegendItem className={SELECTED} label="Selected" />
                 </ul>
               </RetroWindow>
-            </div>
           </div>
         </div>
       </FramedSection>
