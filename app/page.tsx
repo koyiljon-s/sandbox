@@ -15,13 +15,21 @@ import {
 import { NAV_ITEMS } from "@/lib/nav";
 import { AnimatedLetters } from "@/components/animated-letters";
 import { CellGrid, FramedSection } from "@/components/frame";
+import { ShaderGradient } from "@/components/ui/shader-gradient";
+
+/**
+ * Pastel tints of the project's colours: accent blue, Polygon violet, the hero
+ * tags' pink and Ethereum teal. The shader takes at most 4 colours,
+ * and they flow in this order, so pink sits next to violet for a smooth blend.
+ */
+const HERO_GRADIENT = ["#A9C1F7", "#CDB5FF", "#F9C0CF", "#A7E0EA"];
 import { ChainSplit, TokenStat } from "./overview-stats";
 
-/** Colour-tinted tags under the hero, one per token type. */
+/** Tags under the hero, one per token type. */
 const HERO_TAGS = [
-  { label: "LAND", standard: "ERC-721", href: "/land", text: "text-land-polygon", tint: "bg-land-polygon/10 group-hover:bg-land-polygon/18" },
-  { label: "SAND", standard: "ERC-20", href: "/economy", text: "text-accent", tint: "bg-accent/8 group-hover:bg-accent/15" },
-  { label: "ASSETS", standard: "ERC-1155", href: "/assets", text: "text-estate", tint: "bg-estate/10 group-hover:bg-estate/18" },
+  { label: "LAND", standard: "ERC-721", href: "/land" },
+  { label: "SAND", standard: "ERC-20", href: "/economy" },
+  { label: "ASSETS", standard: "ERC-1155", href: "/assets" },
 ];
 
 const TOKENS = [
@@ -87,7 +95,9 @@ export default function OverviewPage() {
     <div className="flex flex-col">
       {/* Hero */}
       <FramedSection divider={false}>
-        <div className="flex flex-col gap-7 px-6 pt-16 pb-14 sm:px-10 sm:pt-24 sm:pb-20">
+        <div className="relative isolate flex flex-col gap-7 px-6 pt-16 pb-14 sm:px-10 sm:pt-24 sm:pb-20">
+          {/* Light theme forced: "auto" would switch to the dark palette for visitors whose OS is in dark mode. */}
+          <ShaderGradient className="-z-10" colors={HERO_GRADIENT} theme="light" intensity={0.85} />
           <p className="label-mono text-accent">01 · Overview</p>
           <h1 className="display max-w-6xl text-[clamp(3.25rem,8vw,7.5rem)]">Explore The Sandbox&apos;s on-chain world</h1>
           <p className="max-w-2xl text-xl text-muted">
@@ -105,7 +115,7 @@ export default function OverviewPage() {
                 className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"
               />
             </Link>
-            <Link href="/economy" className="border border-line-strong px-5 py-3 font-medium hover:bg-surface-2">
+            <Link href="/economy" className="border border-line-strong bg-background px-5 py-3 font-medium hover:bg-surface-2">
               About SAND
             </Link>
           </div>
@@ -116,14 +126,12 @@ export default function OverviewPage() {
             <Link
               key={tag.label}
               href={tag.href}
-              className={`wave group relative flex items-center justify-between gap-2 bg-background px-6 py-4 font-medium sm:px-10 ${tag.text}`}
+              className="wave flex items-center justify-between gap-2 bg-[#fad1dc] px-6 py-4 font-medium text-[#3d2d31] transition-colors hover:bg-[#f7bdcc] sm:px-10"
             >
-              {/* Tint as a layer: a translucent cell background would let the grid lines show through. */}
-              <span aria-hidden="true" className={`absolute inset-0 transition-colors ${tag.tint}`} />
-              <span className="relative">
+              <span>
                 <AnimatedLetters text={tag.label} effect="wave" />
               </span>
-              <span className="label-mono relative opacity-70">{tag.standard}</span>
+              <span className="label-mono opacity-80">{tag.standard}</span>
             </Link>
           ))}
         </CellGrid>
